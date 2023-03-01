@@ -1,4 +1,4 @@
-1                                                          The SAS System                             14:34 Wednesday, March 1, 2023
+1                                                          The SAS System                             17:11 Wednesday, March 1, 2023
 
 NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
 NOTE: All registry changes will be lost at the end of the session.
@@ -20,66 +20,70 @@ NOTE: Additional host information:
 
 NOTE: SAS initialization used:
       real time           0.01 seconds
-      cpu time            0.02 seconds
+      cpu time            0.01 seconds
       
 1          %macro create_lib;
 2          *Create a folder for comparison if required;
 3          %let complib=%str(/mnt/code/ISS/test/);
-4          %let compn = 3;
-5          %let lib1=STUDY1;
-6          %let lib2=STUDY2;
-7          %let lib3=STUDY3;
-8          %let createlib = %sysfunc(dequote(&complib.));
-9          
-10         data _null_;
-11           call symput("folder","&createlib.");
-12           call symput("adam","&createlib./adamdata/");
-13           call symput("ardata","&createlib./ardata/");
-14           call symput("code","&createlib./code/");
-15           call symput("dddata","&createlib./dddata/");
-16           call symput("documents","&createlib./documents/");
-17           call symput("driver","&createlib./drivers/");
-18           call symput("output","&createlib./output/");
-19           call symput("pkdata","&createlib./pkdata/");
-20           call symput("rawdata","&createlib./rawdata/");
-21           call symput("refdata","&createlib./refdata/");
-22           call symput("logs","&createlib./saslogs/");
-23           call symput("sdtm","&createlib./sdtm/");
-24         run;
-25         
-26         x "mkdir &folder";
-27         x "mkdir &adam";
-28         x "mkdir &ardata";
-29         x "mkdir &code";
-30         x "mkdir &dddata";
-31         x "mkdir &documents";
-32         x "mkdir &driver";
-33         x "mkdir &output";
-34         x "mkdir &pkdata";
-35         x "mkdir &rawdata";
-36         x "mkdir &refdata";
-2                                                          The SAS System                             14:34 Wednesday, March 1, 2023
+4          %let complib_data=%str(/mnt/data/US_PhUSE_ISS_Tool/test/);
+5          %let compn = 3;
+6          %let lib1=STUDY1;
+7          %let lib2=STUDY2;
+8          %let lib3=STUDY3;
+9          %let createlib = %sysfunc(dequote(&complib.));
+10         %let createlib_data = %sysfunc(dequote(&complib_data.));
+11         
+12         data _null_;
+13           call symput("folder","&createlib.");
+14           call symput("folderd","&createlib_data.");
+15           call symput("adam","&createlib_data./adamdata/");
+16           call symput("ardata","&createlib./ardata/");
+17           call symput("code","&createlib./code/");
+18           call symput("dddata","&createlib./dddata/");
+19           call symput("documents","&createlib./documents/");
+20           call symput("driver","&createlib./drivers/");
+21           call symput("output","&createlib./output/");
+22           call symput("pkdata","&createlib./pkdata/");
+23           call symput("rawdata","&createlib./rawdata/");
+24           call symput("refdata","&createlib./refdata/");
+25           call symput("logs","&createlib./saslogs/");
+26           call symput("sdtm","&createlib./sdtm/");
+27         run;
+28         
+29         x "mkdir &folder";
+30         x "mkdir &folderd";
+31         x "mkdir &adam";
+32         x "mkdir &ardata";
+33         x "mkdir &code";
+34         x "mkdir &dddata";
+35         x "mkdir &documents";
+36         x "mkdir &driver";
+2                                                          The SAS System                             17:11 Wednesday, March 1, 2023
 
-37         x "mkdir &logs";
-38         x "mkdir &sdtm";
-39         
-40         %do z = 1 %to &compn;
-41         data _null_;
-42             call symput("crlib&z.C","&createlib.adamdata/&&lib&z..C/");
-43             call symput("crlib&z.","&createlib.adamdata/&&lib&z../");
-44         run;
-45         
-46         x "mkdir &&&crlib&z.C.";
-47         x "mkdir &&crlib&z..";
-48         
-49         %end;
-50         
-51         %mend create_lib;
-52         %create_lib;
+37         x "mkdir &output";
+38         x "mkdir &pkdata";
+39         x "mkdir &rawdata";
+40         x "mkdir &refdata";
+41         x "mkdir &logs";
+42         x "mkdir &sdtm";
+43         
+44         %do z = 1 %to &compn;
+45         data _null_;
+46             call symput("crlib&z.C","&createlib_data.adamdata/&&lib&z..C/");
+47             call symput("crlib&z.","&createlib_data.adamdata/&&lib&z../");
+48         run;
+49         
+50         x "mkdir &&&crlib&z.C.";
+51         x "mkdir &&crlib&z..";
+52         
+53         %end;
+54         
+55         %mend create_lib;
+56         %create_lib;
 
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -103,6 +107,6 @@ NOTE: DATA statement used (Total process time):
 
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           0.10 seconds
-      cpu time            0.02 seconds
+      real time           0.12 seconds
+      cpu time            0.03 seconds
       
