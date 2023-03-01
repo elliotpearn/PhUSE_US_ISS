@@ -116,7 +116,7 @@
 %let complib2=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY2');
 %let complib3=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY3');
 %let comploc=%str(/arenv/arwork/gsk4182136/mid215199/iss_01/qc/Compares/);
-%let compfilt1=%str(where trt01an = 1);
+%let compfilt1=;
 %let compfilt2=;
 %let compfilt3=;
 %let compfilt4=;
