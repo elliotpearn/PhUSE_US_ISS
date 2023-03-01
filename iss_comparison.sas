@@ -102,7 +102,7 @@
 ***********************************************;
 /*
 %let mainlib=%str(/mnt/code/ISS/);
-%let complib=%str(/mnt/code/ISS/test);
+%let complib=%str(/mnt/code/ISS/test/);
 %let compn=3;
 %let ds_remove =;
 %let lib1=STUDY1;
