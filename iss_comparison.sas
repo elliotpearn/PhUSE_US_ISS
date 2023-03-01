@@ -101,10 +101,11 @@
 ************* USE IN ARWORK ONLY **************;
 ***********************************************;
 /*
-%let mainlib=%str(/mnt/code/ISS/);
+%let mainlib_data=%str(/mnt/data/US_PhUSE_ISS_Tool/ISS);
+%let mianlib=%str(/mnt/code/ISS/);
 %let complib=%str(/mnt/code/ISS/test/);
 %let compn=3;
-%let ds_remove =;
+%let ds_remove =("none");
 %let lib1=STUDY1;
 %let lib2=STUDY2;
 %let lib3=STUDY3;
@@ -231,7 +232,7 @@ run;
     data files;
      keep filename;
      length fref $8 filename $80;
-     rc = filename(fref, "&mainlib.adamdata/");
+     rc = filename(fref, "/mnt/code/ISS_Area/adamdata/");
      if rc = 0 then
      do;
      did = dopen(fref);
