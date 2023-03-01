@@ -101,8 +101,8 @@
 ************* USE IN ARWORK ONLY **************;
 ***********************************************;
 /*
-%let mainlib=%str(/arenv/arprod/gsk4182136/mid215199/iss_01/);
-%let complib=%str(/arenv/arwork/gsk4182136/mid215199/iss_01/test/);
+%let mainlib=%str(/mnt/code/ISS/);
+%let complib=%str(/mnt/code/ISS/test);
 %let compn=3;
 %let ds_remove =;
 %let lib1=STUDY1;
