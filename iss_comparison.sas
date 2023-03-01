@@ -1,12 +1,6 @@
 /******************Header Template V2***************************************
 | Program Name: iss_comparison.sas
-| Compound/Study/Reporting Effort:gsk4182136/mid215199/iss_01
-|
-| OS / SAS Version: Linux SAS 9.4
-|
 | Purpose: Tool to compare ISS study datasets back to original studies.
-|
-|
 | Input Parameters: 
 | NAME                  DESCRIPTION                                                      DEFAULT
 | -----------------     ------------------------------------------------------------    --------
@@ -109,26 +103,18 @@
 /*
 %let mainlib=%str(/arenv/arprod/gsk4182136/mid215199/iss_01/);
 %let complib=%str(/arenv/arwork/gsk4182136/mid215199/iss_01/test/);
-%let compn=5;
-%let ds_remove = %str("ADAEANAL" "ADFACE");
-%let lib1=ICE;
-%let lib2=TAIL;
-%let lib3=PEAKA;
-%let lib4=PEAKB;
-%let lib5=PEAKC;
-%let lib6=;
-%let filter1=%str(STUDYID = "214367");
-%let filter2=%str(STUDYID = "217114");
-%let filter3=%str(STUDYID = "216912" and PART = "PART A");
-%let filter4=%str(STUDYID = "216912" and PART = "PART B");
-%let filter5=%str(STUDYID = "216912" and PART = "PART C");
-%let filter6=;
+%let compn=3;
+%let ds_remove =;
+%let lib1=STUDY1;
+%let lib2=STUDY2;
+%let lib3=STUDY3;
+%let filter1=%str(STUDYID = "STUDY1");
+%let filter2=%str(STUDYID = "STUDY2");
+%let filter3=%str(STUDYID = "STUDY3");
 %let csv = %str(/arenv/arwork/gsk4182136/mid215199/iss_01/refdata/ISS_Var_Rename.csv);
-%let complib1=%str('/arenv/arprod/gsk4182136/mid214367/final_01/adamdata');
-%let complib2=%str('/arenv/arprod/gsk4182136/mid217114/primary_01/adamdata');
-%let complib3=%str('/arenv/arprod/gsk4182136/mid216912/primary_01/adamdata');
-%let complib4=%str('/arenv/arprod/gsk4182136/mid216912/primary_02/adamdata');
-%let complib5=%str('/arenv/arprod/gsk4182136/mid216912/primary_03/adamdata');
+%let complib1=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY1');
+%let complib2=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY2');
+%let complib3=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY3');
 %let comploc=%str(/arenv/arwork/gsk4182136/mid215199/iss_01/qc/Compares/);
 %let compfilt1=%str(where trt01an = 1);
 %let compfilt2=;
