@@ -1,0 +1,108 @@
+1                                                          The SAS System                             14:34 Wednesday, March 1, 2023
+
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: One or more libraries specified in the concatenated library SASHELP 
+WARNING: do not exist.  These libraries were removed from the concatenation.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
+NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software V.04.00 (TS M0) 
+      Licensed to DOMINO DATA LAB INC - MICROSOFT AZURE, Site 70297955.
+NOTE: This session is executing on the Linux 5.4.209-116.363.amzn2.x86_64 (LIN X64) platform.
+
+
+
+NOTE: Additional host information:
+
+ Linux LIN X64 5.4.209-116.363.amzn2.x86_64 #1 SMP Wed Aug 10 21:19:18 UTC 2022 x86_64 Red Hat Enterprise Linux release 8.6 (Ootpa) 
+
+NOTE: SAS initialization used:
+      real time           0.01 seconds
+      cpu time            0.02 seconds
+      
+1          %macro create_lib;
+2          *Create a folder for comparison if required;
+3          %let complib=%str(/mnt/code/ISS/test/);
+4          %let compn = 3;
+5          %let lib1=STUDY1;
+6          %let lib2=STUDY2;
+7          %let lib3=STUDY3;
+8          %let createlib = %sysfunc(dequote(&complib.));
+9          
+10         data _null_;
+11           call symput("folder","&createlib.");
+12           call symput("adam","&createlib./adamdata/");
+13           call symput("ardata","&createlib./ardata/");
+14           call symput("code","&createlib./code/");
+15           call symput("dddata","&createlib./dddata/");
+16           call symput("documents","&createlib./documents/");
+17           call symput("driver","&createlib./drivers/");
+18           call symput("output","&createlib./output/");
+19           call symput("pkdata","&createlib./pkdata/");
+20           call symput("rawdata","&createlib./rawdata/");
+21           call symput("refdata","&createlib./refdata/");
+22           call symput("logs","&createlib./saslogs/");
+23           call symput("sdtm","&createlib./sdtm/");
+24         run;
+25         
+26         x "mkdir &folder";
+27         x "mkdir &adam";
+28         x "mkdir &ardata";
+29         x "mkdir &code";
+30         x "mkdir &dddata";
+31         x "mkdir &documents";
+32         x "mkdir &driver";
+33         x "mkdir &output";
+34         x "mkdir &pkdata";
+35         x "mkdir &rawdata";
+36         x "mkdir &refdata";
+2                                                          The SAS System                             14:34 Wednesday, March 1, 2023
+
+37         x "mkdir &logs";
+38         x "mkdir &sdtm";
+39         
+40         %do z = 1 %to &compn;
+41         data _null_;
+42             call symput("crlib&z.C","&createlib.adamdata/&&lib&z..C/");
+43             call symput("crlib&z.","&createlib.adamdata/&&lib&z../");
+44         run;
+45         
+46         x "mkdir &&&crlib&z.C.";
+47         x "mkdir &&crlib&z..";
+48         
+49         %end;
+50         
+51         %mend create_lib;
+52         %create_lib;
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           0.10 seconds
+      cpu time            0.02 seconds
+      

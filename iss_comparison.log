@@ -1,0 +1,1154 @@
+1                                                          The SAS System                             12:00 Wednesday, March 1, 2023
+
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: One or more libraries specified in the concatenated library SASHELP 
+WARNING: do not exist.  These libraries were removed from the concatenation.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
+NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software V.04.00 (TS M0) 
+      Licensed to DOMINO DATA LAB INC - MICROSOFT AZURE, Site 70297955.
+NOTE: This session is executing on the Linux 5.4.209-116.363.amzn2.x86_64 (LIN X64) platform.
+
+
+
+NOTE: Additional host information:
+
+ Linux LIN X64 5.4.209-116.363.amzn2.x86_64 #1 SMP Wed Aug 10 21:19:18 UTC 2022 x86_64 Red Hat Enterprise Linux release 8.6 (Ootpa) 
+
+NOTE: SAS initialization used:
+      real time           0.01 seconds
+      cpu time            0.02 seconds
+      
+1          /******************Header Template V2***************************************
+2          | Program Name: iss_comparison.sas
+3          | Compound/Study/Reporting Effort:gsk4182136/mid215199/iss_01
+4          |
+5          | OS / SAS Version: Linux SAS 9.4
+6          |
+7          | Purpose: Tool to compare ISS study datasets back to original studies.
+8          |
+9          |
+10         | Input Parameters:
+11         | NAME                  DESCRIPTION                                                      DEFAULT
+12         | -----------------     ------------------------------------------------------------    --------
+13         | MAINLIB               Specifies the file directory of the ISS                          (None)
+14         |
+15         | COMPLIB               Specifies the file directory where the compare datasets          (None)
+16         |                       will be created. RECOMMEND: Creating a test area within the
+17         |                       same RE and copying folder structure.
+18         |
+19         | COMPN                 Specifies the number of studies included in the ISS              (None)
+20         |
+21         | DS_REMOVE             Specifies the name of any datasets that you do not want          (None)
+22         |                       to compare
+23         |
+24         | LIB1-LIB6             Specifies the short names of the individual origin studies       (None)
+25         |                       used to create datasets and library names (e.g STUDY1 for 1st
+26         |                       comparison study)
+27         |
+28         | FILTER1-6             Specifies the filter required on the ISS datasets to create      (None)
+29         |                       origin study datasets
+30         |
+31         |
+32         | COMPLIB1-6            Specifies the library of the origin study                        (None)
+33         |
+34         | CSV                   Specifies the location and name of the CSV file required         (None)
+35         |                       for renaming variables for comparison - ISS_Var_Rename.csv.
+36         |                       CSV has 3 columns:
+2                                                          The SAS System                             12:00 Wednesday, March 1, 2023
+
+37         |                         DATASET - specify datasets where change is required in.
+38         |                         STUDY - origin study where change is required
+39         |                                (needs to match values in LIB1-LIB6)
+40         |                         OLD_VAR - Name of variable in origin study
+41         |                         NEW_VAR - Name of variable in ISS study
+42         |
+43         |
+44         | COMPLOC               Specifies the desired location of the Compare PDFs               (None)
+45         |
+46         | DISP                  Specifies whether Displays will also be compared                  N
+47         |
+48         | DATAC                 Specifies whether Datasets will be compared                       Y
+49         |
+50         | DRIVLIB               Specifies the location of the display drivers                    (None)
+51         |
+52         | Input: n/a
+53         | Output: list of output files or responses or `n/a`
+54         |
+55         | Global macro variables created: n/a
+56         |
+57         | Macros called: n/a
+58         |
+59         |
+60         | Additional Notes:
+61         |
+62         |***************************************************************************
+63         | ~Change Log~
+64         | Version | Developer | Date        | Description
+65         | 1       | ep582653 | 30-MAR-2022  | Creation
+66         |
+67         ****************************************************************************/
+68         
+69         %macro iss_comparison(
+70                 folder =N,
+71                 mainlib=,
+72                 complib=,
+73                 compn=,
+74                 ds_remove =,
+75                 lib1=,
+76                 lib2=,
+77                 lib3=,
+78                 lib4=,
+79                 lib5=,
+80                 lib6=,
+81                 filter1=,
+82                 filter2=,
+83                 filter3=,
+84                 filter4=,
+85                 filter5=,
+86                 filter6=,
+87                 complib1=,
+88                 complib2=,
+89                 complib3=,
+90                 complib4=,
+91                 complib5=,
+92                 complib6=,
+93                 compfilt1=,
+94                 compfilt2=,
+3                                                          The SAS System                             12:00 Wednesday, March 1, 2023
+
+95                 compfilt3=,
+96                 compfilt4=,
+97                 compfilt5=,
+98                 compfilt6=,
+99                 csv =,
+100                comploc =,
+101                disp=N,
+102                datac=Y,
+103                drivlib =
+104                );
+105        
+106        ***********************************************;
+107        ************* USE IN ARWORK ONLY **************;
+108        ***********************************************;
+109        /*
+110        %let mainlib=%str(/arenv/arprod/gsk4182136/mid215199/iss_01/);
+111        %let complib=%str(/arenv/arwork/gsk4182136/mid215199/iss_01/test/);
+112        %let compn=5;
+113        %let ds_remove = %str("ADAEANAL" "ADFACE");
+114        %let lib1=ICE;
+115        %let lib2=TAIL;
+116        %let lib3=PEAKA;
+117        %let lib4=PEAKB;
+118        %let lib5=PEAKC;
+119        %let lib6=;
+120        %let filter1=%str(STUDYID = "214367");
+121        %let filter2=%str(STUDYID = "217114");
+122        %let filter3=%str(STUDYID = "216912" and PART = "PART A");
+123        %let filter4=%str(STUDYID = "216912" and PART = "PART B");
+124        %let filter5=%str(STUDYID = "216912" and PART = "PART C");
+125        %let filter6=;
+126        %let csv = %str(/arenv/arwork/gsk4182136/mid215199/iss_01/refdata/ISS_Var_Rename.csv);
+127        %let complib1=%str('/arenv/arprod/gsk4182136/mid214367/final_01/adamdata');
+128        %let complib2=%str('/arenv/arprod/gsk4182136/mid217114/primary_01/adamdata');
+129        %let complib3=%str('/arenv/arprod/gsk4182136/mid216912/primary_01/adamdata');
+130        %let complib4=%str('/arenv/arprod/gsk4182136/mid216912/primary_02/adamdata');
+131        %let complib5=%str('/arenv/arprod/gsk4182136/mid216912/primary_03/adamdata');
+132        %let comploc=%str(/arenv/arwork/gsk4182136/mid215199/iss_01/qc/Compares/);
+133        %let compfilt1=%str(where trt01an = 1);
+134        %let compfilt2=;
+135        %let compfilt3=;
+136        %let compfilt4=;
+137        %let compfilt5=;
+138        %let comploc=%str(/arenv/arwork/gsk4182136/mid215199/iss_01/qc/Compares/);
+139        %let disp = Y;
+140        %let drivlib = %str(/arenv/arprod/gsk4182136/mid215199/iss_01/);
+141        */
+142        
+143        %if &datac= Y %then %do;
+144        
+145        %if folder = Y %then %do;
+146        %macro create_lib;
+147        *Create a folder for comparison if required;
+148        %let createlib = %sysfunc(dequote(&complib.));
+149        
+150        data _null_;
+151          call symput("folder","&createlib.");
+152          call symput("adam","&createlib./adamdata/");
+4                                                          The SAS System                             12:00 Wednesday, March 1, 2023
+
+153          call symput("ardata","&createlib./ardata/");
+154          call symput("code","&createlib./code/");
+155          call symput("dddata","&createlib./dddata/");
+156          call symput("documents","&createlib./documents/");
+157          call symput("driver","&createlib./drivers/");
+158          call symput("output","&createlib./output/");
+159          call symput("pkdata","&createlib./pkdata/");
+160          call symput("rawdata","&createlib./rawdata/");
+161          call symput("refdata","&createlib./refdata/");
+162          call symput("logs","&createlib./saslogs/");
+163          call symput("sdtm","&createlib./sdtm/");
+164        run;
+165        
+166        x "mkdir &folder";
+167        x "mkdir &adam";
+168        x "mkdir &ardata";
+169        x "mkdir &code";
+170        x "mkdir &dddata";
+171        x "mkdir &documents";
+172        x "mkdir &driver";
+173        x "mkdir &output";
+174        x "mkdir &pkdata";
+175        x "mkdir &rawdata";
+176        x "mkdir &refdata";
+177        x "mkdir &logs";
+178        x "mkdir &sdtm";
+179        
+180        %do z = 1 %to &compn;
+181        data _null_;
+182            call symput("crlib&z.C","&createlib.adamdata/&&lib&z..C/");
+183            call symput("crlib&z.","&createlib.adamdata/&&lib&z../");
+184        run;
+185        
+186        x "mkdir &&&crlib&z.C.";
+187        x "mkdir &&crlib&z..";
+188        
+189        %end;
+190        
+191        %mend create_lib;
+192        %create_lib;
+193        
+194        %end;
+195        
+196        **Create lib_list macro variable which is used throughout;
+197        %macro create_lib_list;
+198        %macro var;
+199        
+200        data lib_list;
+201            %do a = 1 %to &compn.;
+202                length lib $200;
+203                lib= strip("&&lib&a..");
+204                output;
+205            %end;
+206        run;
+207        
+208        %mend;
+209        %var;
+211        %macro create();
+5                                                          The SAS System                             12:00 Wednesday, March 1, 2023
+
+212        %let dsid=%sysfunc(open(lib_list));
+213        %let cnt=%sysfunc(attrn(&dsid,nobs));
+214            %do b=1 %to &cnt.;
+215              %let rc=%sysfunc(fetchobs(&dsid,&b));
+216              %cmpres(%sysfunc(getvarc(&dsid,%sysfunc(varnum(&dsid,lib)))))
+217            %end;
+218          %let rc=%sysfunc(close(&dsid));
+219        %mend create;
+221        %global lib_list;
+222        %let lib_list = %create;
+223        
+224        %mend create_lib_list;
+225        %create_lib_list;
+226        
+227        **First call filter_dd macro - which filters ISS datasets and outputs for just origin study records;
+228        %macro filter_dd;
+229            %macro filter(lib=,dset_in=);
+230        
+231            **Read in current ADaMs and output to compare folder filtered for each origin study;
+232            libname comp "&complib.adamdata/&lib.C";
+233            data comp.&dset_in;
+234                set adamdata.&dset_in;
+235        
+236                %do i = 1 %to &compn.;
+237        
+238                %if &lib.=&&lib&i.. %then if &&filter&i..;;
+239        
+240                %end;
+241            run;
+242        
+243            %mend;
+244        
+245            ** Create macro variables for all ADaMs created in ISS;
+246            data files;
+247             keep filename;
+248             length fref $8 filename $80;
+249             rc = filename(fref, "&mainlib.adamdata/");
+250             if rc = 0 then
+251             do;
+252             did = dopen(fref);
+253             rc = filename(fref);
+254             end;
+255             dnum = dnum(did);
+256             do m = 1 to dnum;
+257             filename = dread(did, m);
+258             n = m;
+259             /* If this entry is a file, then output. */
+260             fid = mopen(did, filename);
+261             if fid > 0
+262             then
+263             output;
+264             end;
+265             rc = dclose(did);
+266             run;
+267        
+268             **Remove extension from filename and filter out any datasets we do not want to compare;
+269             data files;
+270                set files (where=(index(filename,".sas7bdat")>0));
+6                                                          The SAS System                             12:00 Wednesday, March 1, 2023
+
+271        
+272                filename=compress(tranwrd(filename,".sas7bdat",""));
+273        
+274                if upcase(filename) not in (&ds_remove.);
+275             run;
+276        
+277            **Count datasets;
+278            %global ds_count;
+279             proc sql noprint;
+280                select count(*)
+281                 into :ds_count
+282                 from files;
+283             quit;
+284        
+285            **Create macro variable for each dataset;
+286             proc sql noprint;
+287                select filename into: dsnam1 - :dsnam%left(&ds_count.)
+288                from files;
+289             quit;
+290        
+291             %do g = 1 %to &ds_count;
+292             %global ds&g.;
+293             %let ds&g.=%str(&&dsnam&g..);
+294             %end;
+295        
+296            **Loop filter macro through each library and each dataset;
+297            %local j next_lib;
+298            %let j=1;
+299            %do %while (%scan(&lib_list, &j) ne );
+300               %let next_lib = %scan(&lib_list, &j);
+301        
+302                %do p = 1 %to &ds_count.;
+303                   %filter(lib=&next_lib,dset_in=&&dsnam&p..);
+304                %end;
+305        
+306               %let j = %eval(&j + 1);
+307            %end;
+308        %mend;
+309        %filter_dd;
+310        
+311        %put _global_;
+312        **Get origin datasets ready for compare:
+313          - Rederive treatment variables in ADSL and merge onto required datasets
+314          - Rename or rederive any variables to allow for an easier compare;
+315        %macro ds_comp_ready(inds=);
+316        
+317        *Individual Study ADaMs - check latests REs;
+318        %do k = 1 %to &compn.;
+319        libname &&lib&k.. &&complib&k..;
+320        %end;
+321        
+322        %macro assign_trt(lib=);
+323        data adsl_&lib.;
+324            set &lib..adsl (drop=trt01p trt01pn trt01a trt01an);
+325        
+326              ****STUDY SPECIFIC CODE - THIS WILL NEED TO BE UPDATED;
+327              ***Reassign Treatment Variables to previous studies so they match ISS;
+328              length trt01p trt01a $26 tr01pg1 tr01ag1 $10 tr01pg2 tr01ag2 $21 tr01pg3 tr01ag3 $30 tr01pg4 tr01ag4 $15;
+7                                                          The SAS System                             12:00 Wednesday, March 1, 2023
+
+329        
+330              **Planned Treatments;
+331              **Placebo arm from ICE;
+332              if STUDYID eq "214367" then do;
+333                if ARMCD = "P" then do;
+334                    trt01p = "Placebo";
+335                    trt01pn = 1;
+336                end;
+337                **Covers Gen 1 from ICE and Peak A;
+338                else if ARMCD = "A" then do;
+339                    trt01p = "Sotrovimab Gen1 (500mg IV)";
+340                    trt01pn = 2;
+341                end;
+342              end;
+343              else if STUDYID eq "216912" then do;
+344                if ARMCD = "A" then do;
+345                    trt01p = "Sotrovimab Gen1 (500mg IV)";
+346                    trt01pn = 2;
+347                end;
+348                **Covers Gen2 IV from Peak A,B and C;
+349                else if ARMCD in ("B" "D" "F")  then do;
+350                    trt01p = "Sotrovimab Gen2 (500mg IV)";
+351                    trt01pn = 3;
+352                end;
+353                **IM arm from Peak B;
+354                else if ARMCD in ("C")  then do;
+355                    trt01p = "Sotrovimab Gen2 (500mg IM)";
+356                    trt01pn = 4;
+357                end;
+358                **IM arm from Peak C;
+359                 else if ARMCD in ("E")  then do;
+360                    trt01p = "Sotrovimab Gen2 (250mg IM)";
+361                    trt01pn = 5;
+362                end;
+363              end;
+364              else if STUDYID eq "217114" then do;
+365                if ARMCD in ("A")  then do;
+366                    trt01p = "Sotrovimab Gen2 (500mg IV)";
+367                    trt01pn = 3;
+368                end;
+369                else if ARMCD in ("B")  then do;
+370                    trt01p = "Sotrovimab Gen2 (500mg IM)";
+371                    trt01pn = 4;
+372                end;
+373                else if ARMCD in ("C")  then do;
+374                    trt01p = "Sotrovimab Gen2 (250mg IM)";
+375                    trt01pn = 5;
+376                end;
+377              end;
+378              else if armcd = "NOTTRT" then do;
+379                    trt01p = "Not Treated";
+380                    trt01pn = 6;
+381              end;
+382              else if armcd = "SCRNFAIL" then do;
+383                    trt01p = "Screen Failure";
+384                    trt01pn = 0;
+385              end;
+386        
+8                                                          The SAS System                             12:00 Wednesday, March 1, 2023
+
+387                **Actual Treatments;
+388                **Placebo arm from ICE;
+389              **Placebo arm from ICE;
+390              if STUDYID eq "214367" then do;
+391                if ACTARMCD = "P" then do;
+392                    TRT01A = "Placebo";
+393                    TRT01An = 1;
+394                end;
+395                **Covers Gen 1 from ICE and Peak A;
+396                else if ACTARMCD = "A" then do;
+397                    TRT01A = "Sotrovimab Gen1 (500mg IV)";
+398                    TRT01An = 2;
+399                end;
+400              end;
+401              else if STUDYID eq "216912" then do;
+402                if ACTARMCD = "A" then do;
+403                    TRT01A = "Sotrovimab Gen1 (500mg IV)";
+404                    TRT01An = 2;
+405                end;
+406                **Covers Gen2 IV from Peak A,B and C;
+407                else if ACTARMCD in ("B" "D" "F")  then do;
+408                    TRT01A = "Sotrovimab Gen2 (500mg IV)";
+409                    TRT01An = 3;
+410                end;
+411                **IM arm from Peak B;
+412                else if ACTARMCD in ("C")  then do;
+413                    TRT01A = "Sotrovimab Gen2 (500mg IM)";
+414                    TRT01An = 4;
+415                end;
+416                **IM arm from Peak C;
+417                 else if ACTARMCD in ("E")  then do;
+418                    TRT01A = "Sotrovimab Gen2 (250mg IM)";
+419                    TRT01An = 5;
+420                end;
+421              end;
+422              else if STUDYID eq "217114" then do;
+423                if ACTARMCD in ("A")  then do;
+424                    TRT01A = "Sotrovimab Gen2 (500mg IV)";
+425                    TRT01An = 3;
+426                end;
+427                else if ACTARMCD in ("B")  then do;
+428                    TRT01A = "Sotrovimab Gen2 (500mg IM)";
+429                    TRT01An = 4;
+430                end;
+431                 else if ACTARMCD in ("C")  then do;
+432                    TRT01A = "Sotrovimab Gen2 (250mg IM)";
+433                    TRT01An = 5;
+434                end;
+435              end;
+436              else if ACTARMCD = "NOTTRT" then do;
+437                    TRT01A = "Not Treated";
+438                    TRT01An = 6;
+439              end;
+440              else if ACTARMCD = "SCRNFAIL" then do;
+441                    TRT01A = "Screen Failure";
+442                    TRT01An = 0;
+443              end;
+444        
+9                                                          The SAS System                             12:00 Wednesday, March 1, 2023
+
+445                **Pooled Treatment - Planned;
+446                **Sotrovimab vs Placebo;
+447                if trt01pn = 1 then do;
+448                    tr01pg1 = "Placebo";
+449                    tr01pg1n = 1;
+450                end;
+451                else if trt01pn in (2,3,4,5) then do;
+452                    tr01pg1 = "Sotrovimab";
+453                    tr01pg1n = 2;
+454                end;
+455                **500IV vs 500IM vs 250IM vs Placebo;
+456                if trt01pn = 1 then do;
+457                    tr01pg2 = "Placebo";
+458                    tr01pg2n = 1;
+459                end;
+460                else if trt01pn in (2,3) then do;
+461                    tr01pg2 = "Sotrovimab (500mg IV)";
+462                    tr01pg2n = 2;
+463                end;
+464                else if trt01pn in (4) then do;
+465                    tr01pg2 = "Sotrovimab (500mg IM)";
+466                    tr01pg2n = 3;
+467                end;
+468                else if trt01pn in (5) then do;
+469                    tr01pg2 = "Sotrovimab (250mg IM)";
+470                    tr01pg2n = 4;
+471                end;
+472                **500 IV/IM vs Placebo vs IM250;
+473                if trt01pn in (1) then do;
+474                    tr01pg3 = "Placebo";
+475                    tr01pg3n = 1;
+476                end;
+477                else if trt01pn in (2,3,4 ) then do;
+478                    tr01pg3 = "Sotrovimab (500mg)";
+479                    tr01pg3n = 2;
+480                end;
+481                else if trt01pn in (5) then do;
+482                    tr01pg3 = "Sotrovimab (250mg IM)";
+483                    tr01pg3n = 3;
+484                end;
+485                **IV vs IM vs Placebo;
+486                if trt01pn = 1 then do;
+487                    tr01pg4 = "Placebo";
+488                    tr01pg4n = 1;
+489                end;
+490                else if trt01pn in (2,3) then do;
+491                    tr01pg4 = "Sotrovimab (IV)";
+492                    tr01pg4n = 2;
+493                end;
+494                else if trt01pn in (4,5) then do;
+495                    tr01pg4 = "Sotrovimab (IM)";
+496                    tr01pg4n = 3;
+497                end;
+498        
+499                **Pooled Treatment - Actual;
+500                **Sotrovimab vs Placebo;
+501                if trt01an = 1 then do;
+502                    tr01ag1 = "Placebo";
+10                                                         The SAS System                             12:00 Wednesday, March 1, 2023
+
+503                    tr01ag1n = 1;
+504                end;
+505                else if trt01an in (2,3,4,5) then do;
+506                    tr01ag1 = "Sotrovimab";
+507                    tr01ag1n = 2;
+508                end;
+509                **500IV vs 500IM vs 250IM vs Placebo;
+510                if trt01an = 1 then do;
+511                    tr01ag2 = "Placebo";
+512                    tr01ag2n = 1;
+513                end;
+514                else if trt01an in (2,3) then do;
+515                    tr01ag2 = "Sotrovimab (500mg IV)";
+516                    tr01ag2n = 2;
+517                end;
+518                else if trt01an in (4) then do;
+519                    tr01ag2 = "Sotrovimab (500mg IM)";
+520                    tr01ag2n = 3;
+521                end;
+522                else if trt01an in (5) then do;
+523                    tr01ag2 = "Sotrovimab (250mg IM)";
+524                    tr01ag2n = 4;
+525                end;
+526                **500 IV/IM vs Placebo/IM250;
+527                if trt01an in (1) then do;
+528                    tr01ag3 = "Placebo";
+529                    tr01ag3n = 1;
+530                end;
+531                else if trt01an in (2,3,4 ) then do;
+532                    tr01ag3 = "Sotrovimab (500mg)";
+533                    tr01ag3n = 2;
+534                end;
+535                else if trt01an in (5) then do;
+536                    tr01ag3 = "Sotrovimab (250mg IM)";
+537                    tr01ag3n = 3;
+538                end;
+539                **IV vs IM vs Placebo;
+540                if trt01an = 1 then do;
+541                    tr01ag4 = "Placebo";
+542                    tr01ag4n = 1;
+543                end;
+544                else if trt01an in (2,3) then do;
+545                    tr01ag4 = "Sotrovimab (IV)";
+546                    tr01ag4n = 2;
+547                end;
+548                else if trt01an in (4,5) then do;
+549                    tr01ag4 = "Sotrovimab (IM)";
+550                    tr01ag4n = 3;
+551                end;
+552        
+553        run;
+554        
+555        **If NON-ADSL dataset is required for TLF comparison - then merge rederived treatments onto old dataset;
+556        **If ADSL then just rename dataset to be in correct format;
+557        libname comp "&complib.adamdata/&lib./";
+558        
+559        %do k = 1 %to &compn.;
+560           %if %sysfunc(exist(&lib..&inds.)) %then %do;
+11                                                         The SAS System                             12:00 Wednesday, March 1, 2023
+
+561            %if &&lib&k.. = &lib. %then %do;
+562                data &inds._pre;
+563                    set &lib..&inds.;
+564        
+565                    %if &&compfilt&k.. ne %then %do;
+566                    &&compfilt&k..;
+567                    %end;
+568                run;
+569            %end;
+570           %end;
+571        %end;
+572        
+573        %let null = 0;
+574        
+575         %if %upcase(&inds.) ne ADSL %then %do;
+576          %if %sysfunc(exist(&lib..&inds.)) %then %do;
+577           data comp.&inds.;
+578            merge &inds._pre (drop=trt0: in=inDS) adsl_&lib. (keep=studyid usubjid trt0: tr0:);
+579            by studyid usubjid;
+580        
+581            if inDS;
+582        
+583           run;
+584          %end;
+585        
+586          %else %do;
+587            %let null = 1;
+588        
+589            data comp.&inds.;
+590                null = 1;
+591            run;
+592        
+593          %end;
+594         %end;
+595         %else %do;
+596           data comp.&inds.;
+597             set adsl_&lib.;
+598        
+599           run;
+600         %end;
+601        
+602        **Import CSV file for renaming variables - all variables that are in both studies just with diff names;
+603        %if &null. ne 1 %then %do;
+604        proc import datafile="&csv."
+605        		out=renam dbms=csv replace;
+606        	getnames=YES;
+607        	guessingrows=max;
+608        run;
+609        
+610        **Format memname to be the same as current datasets;
+611        data renam_format;
+612            set renam;
+613            length memname $32;
+614            memname = strip(dataset);
+615        
+616            drop dataset;
+617        run;
+618        
+12                                                         The SAS System                             12:00 Wednesday, March 1, 2023
+
+619        %let nam = %str(&lib._&inds._cont);
+620        
+621        data ds_in;
+622            set %put &nam;;
+623        run;
+624        
+625        **Proc Contents to get attributes for variables;
+626        proc contents data=comp.&inds. out=ds_in noprint;
+627        title 'before renaming';
+628        run;
+629        
+630        **Set all attribute dataset together;
+631        data cont_all;
+632            set ds_in;
+633        
+634            lib="&lib.";
+635        run;
+636        **Merge attributes with renaming dataset and only keep variables that are in both;
+637        **Create a macro variable of the list of dataset that will need a variable renamed;
+638        proc sql noprint;
+639            create table rename_identify as
+640            select a.memname, a.name, b.new_var, b.study
+641            from cont_all (where=(lib="&lib.")) as a, renam_format (where=(study="&lib.")) as b
+642            where a.memname = b.memname and a.name=b.old_var;
+643        
+644            select distinct(memname) into: ds_list
+645            separated by " "
+646            from rename_identify;
+647        quit;
+648        
+649        **Create order variable;
+650        proc sort data=rename_identify;
+651            by memname name;
+652        run;
+653        
+654        data rename_identify;
+655            set rename_identify;
+656            by memname name;
+657        
+658            retain varnum 0;
+659            if first.memname then varnum=1;
+660            else varnum=varnum+1;
+661        run;
+662        
+663        %end;
+664        
+665        %if %symexist(ds_list) %then %do;
+666        
+667        %macro renam(dsin=);
+668        
+669            **Read in required dataset and find number of vars required;
+670            data rename_num;
+671                set rename_identify (where=(memname="&dsin" and study="&lib."));
+672                by memname varnum;
+673        
+674                if first.memname then call symput("start",strip(put(varnum,best.)));
+675                if last.memname then call symput("end",strip(put(varnum,best.)));
+676            run;
+13                                                         The SAS System                             12:00 Wednesday, March 1, 2023
+
+677        
+678            **Count number of obs and only run renaming code if needed;
+679            proc sql noprint;
+680               select count(*) into: nobs
+681               from rename_num;
+682            quit;
+683        
+684            %if &nobs ne 0 %then %do;
+685        
+686            **Create a list the old variables and the new variables into a macro variable;
+687            proc sql noprint;
+688                select distinct(name) into: old_list
+689                separated by " "
+690                from rename_identify (where=(memname="&dsin"));
+691                select distinct(name) into: old_sql
+692                separated by ","
+693                from rename_identify (where=(memname="&dsin"));
+694                select distinct(new_var) into: new_list
+695                separated by " "
+696                from rename_identify (where=(memname="&dsin"));
+697            quit;
+698        
+699            **Pull out the new variables and transpose so there is 1 record and all variables;
+700            proc transpose data=rename_identify (where=(memname="&dsin")) out=new_var_t (keep=&new_list);
+701                by memname;
+702                id new_var;
+703            run;
+704        
+705            data sortedby;
+706                set sashelp.vcolumn;
+707                where libname="ADAMDATA" and memname=upcase("&inds") and sortedby ne 0;
+708            run;
+709        
+710            proc sql noprint;
+711                select distinct(name) into: sorted_list
+712                separated by " "
+713                from sortedby;
+714                 select distinct(name) into: sorted_sql
+715                separated by ","
+716                from sortedby;
+717            quit;
+718        
+719            **Create a temporary dataset containing old variables and merge variables;
+720            proc sql noprint;
+721                create table temp as
+722                select &old_sql, &sorted_sql
+723                from comp.&dsin;
+724            quit;
+725        
+726            **Create a second temporary dataset containing all variables but the old variables;
+727            proc sort data=comp.&dsin. out=temp2 (drop=&old_list);
+728                by &sorted_list;
+729            run;
+730        
+731            %LET ds=%SYSFUNC(OPEN(temp,i));
+732            %LET renam=%SYSFUNC(OPEN(new_var_t,i));
+733        
+734            **Renaming the variable process;
+14                                                         The SAS System                             12:00 Wednesday, March 1, 2023
+
+735            %do i=&start %to &end;
+736                %let newnam&i=%SYSFUNC(VARNAME(&renam,&i));
+737                %let dsvn&i=%SYSFUNC(VARNAME(&ds,&i));
+738                %if %index(&sorted_list,%upcase(&&dsvn&i)) eq 0 %then %do;
+739                    %let vn&i=&&newnam&i;
+740        
+741                **Use VCOLUMN dataset to get attributes so that we can set lengths/label varibles;
+742                data var_props;
+743                    set sashelp.vcolumn;
+744                    where libname="COMP" and memname="&dsin." and name="&&dsvn&i.";
+745                    if type ne "" then call symputx("type&i",type,"G");
+746        
+747                run;
+748        
+749                data var_props2;
+750                    set sashelp.vcolumn;
+751                    where libname="ADAMDATA" and memname=upcase("&inds") and name=upcase("&&newnam&i.");
+752                    if label ne "" then call symputx("lab&i",label);
+753                    if type = "char" then if length ne . then call symputx("len&i",length);
+754               run;
+755        
+756               %end;
+757            %end;
+758        
+759            **Finalising renaming process;
+760            data temp_renam;
+761            set temp;
+762        
+763            %do i=&start %to &end;
+764            %if %index(&sorted_list,%upcase(&&dsvn&i)) eq 0 %then %do;
+765            %if &&type&i eq char %then %do;
+766            length &&vn&i $&&len&i;
+767            %end;
+768            &&vn&i=&&dsvn&i;
+769            label &&vn&i = "&&lab&i.";
+770            drop &&dsvn&i.;
+771            %end;
+772            %end;
+773            %let rc=%SYSFUNC(CLOSE(&ds));
+774            %let rc=%SYSFUNC(CLOSE(&renam));
+775            run;
+776        
+777            proc sort data=temp_renam;
+778                by &sorted_list;
+779            run;
+780        
+781            **Merge data back together with new variables;
+782            data comp.&dsin;
+783                merge temp2 (drop=&new_list) temp_renam ;
+784                by &sorted_list;
+785            run;
+786        
+787            %end;
+788        
+789        %mend renam;
+790        
+791        **Take list of datasets required and loop renaming macro through;
+792        %local k next_ds;
+15                                                         The SAS System                             12:00 Wednesday, March 1, 2023
+
+793        %let k=1;
+794        %do %while (%scan(&ds_list, &k) ne );
+795           %let next_ds = %scan(&ds_list, &k);
+796           %renam(dsin=&next_ds);
+797           %let k = %eval(&k + 1);
+798        %end;
+799        %end;
+800        
+801        %mend assign_trt;
+802        **Specify list of libraries and run macro through them;
+803        %local q next_lib;
+804        %let q=1;
+805        %do %while (%scan(&lib_list, &q) ne );
+806           %let next_lib = %scan(&lib_list, &q);
+807           %assign_trt(lib=&next_lib);
+808           %let q = %eval(&q + 1);
+809        %end;
+810        
+811        %mend ds_comp_ready;
+812        %macro test;
+813        %do g = 1 %to &ds_count.;
+814           %ds_comp_ready(inds=&&ds&g..);
+815        %end;
+816        %mend test;
+817        %test;
+818        
+819        ***Now run macro to compare datasets;
+820        %macro compare_dd (in=,comp=);
+821          %tu_putglobals(varsin=g_fnc);
+822           %*- SET SYSTEM OPTIONS LOCALLY FOR THIS MACRO;
+823           %* we are going to create a lot of output (e.g. proc compare) so set pagesize to max ;
+824           %* first, save the current options so that we can restore at end of macro ;
+825           %let original_PS = %sysfunc(getoption(PS));
+826           %let original_ORIENTATION = %sysfunc(getoption(orientation));
+827           options ps=max orientation=landscape;
+828        
+829           %* Setup ODS output for PDF file with name using macro parameter (filein) ;
+830           %* with system date attached e.g. /path/to/file/name_27JUL21.pdf          ;
+831           %* where filein=/path/to/file/name                                        ;
+832           ods listing close;
+833           ods noresults;
+834           ods pdf file="&comploc.&in._Data_Compare.pdf";
+835        
+836           %macro comp_loop(lib=);
+837        
+838            %do t = 1 %to &compn;
+839                %if &in.=&ds1. %then %do;
+840                    libname compc "&complib.adamdata/&lib.C";
+841                    libname comp "&complib.adamdata/&lib.";
+842                %end;
+843            %end;
+844        
+845         %* define a value to accumulate all the proc compare results into;
+846        %let compres=0;
+847        
+848           %* Loop through every dataset in the original/old library and proc compare ;
+849           %* with the dataset of same name in the new library.                       ;
+850              title  "Compare of &in.";
+16                                                         The SAS System                             12:00 Wednesday, March 1, 2023
+
+851              title2 "from- &lib";
+852              title3 "to- ISS";
+853              proc compare base=comp.&in.
+854                           compare=compc.&in.
+855                           listall                  /* List all vars and obs differences */
+856                           maxprint=(50,2000);      /* limit diffs reported (per-var,total)*/
+857              run;
+858              %* accumulate the sysinfo (which is a binary value);
+859              %let compres = %sysfunc(bOR(&sysinfo, &compres.));
+860        
+861           %* once completed all proc compare, output result to log;
+862           %put %str(IN)FO: PROC COMPARE result for all datasets is [&compres.];
+863        
+864           %mend comp_loop;
+865        
+866        **Specify list of libraries and run macro through them;
+867            %local s next_lib;
+868            %let s=1;
+869            %do %while (%scan(&lib_list, &s) ne );
+870               %let next_lib = %scan(&lib_list, &s);
+871               %comp_loop(lib=&next_lib);
+872               %let s = %eval(&s + 1);
+873            %end;
+874          ods pdf close;
+875        
+876           %* TIDY UP;
+877        
+878           %* restore the original PS (pagesize) option ;
+879           options PS=&original_PS orientation=&original_ORIENTATION;
+880        
+881        %mend compare_dd;
+882        
+883        %do p = 1 %to &ds_count.;
+884           %compare_dd(in=&&ds&p..);
+885        %end;
+886        
+887        %end;
+888        
+889        ******** DISPLAY COMPARISON SECTION *****************;
+890        %if &disp = Y %then %do;
+891        **** SAS 2 TERMINAL CODE  ****;
+892        data copy;
+893          x echo Delete drivers from current folder to prevent overwriting;
+894          x cd &complib.drivers/;
+895          x \rm t_*.sas;
+896          x echo Copy drivers from prod into test area;
+897          x cd &drivlib.drivers;
+898          x cp -p t_*.sas &complib.drivers/;
+899          x echo Copy macros from prod into test area;
+900          x cd &drivlib.code;
+901          x cp -p rd_*.sas &complib.code/;
+902          x cp -p td_*.sas &complib.code/;
+903          x cp -p tu_*.sas &complib.code/;
+904          x cp -p ts_*.sas &complib.code/;
+905        run;
+906        
+907        data drivers;
+908         keep filename n;
+17                                                         The SAS System                             12:00 Wednesday, March 1, 2023
+
+909         length fref $8 filename $80;
+910         rc = filename(fref, "&complib.drivers/");
+911         if rc = 0 then
+912         do;
+913         did = dopen(fref);
+914         rc = filename(fref);
+915         end;
+916         dnum = dnum(did);
+917         do c = 1 to dnum;
+918         filename = dread(did, c);
+919         n = c;
+920         /* If this entry is a file, then output. */
+921         fid = mopen(did, filename);
+922         if fid > 0
+923         then
+924         output;
+925         end;
+926         rc = dclose(did);
+927         run;
+928        
+929         data drivers;
+930            set drivers;
+931        
+932            filename=compress(tranwrd(filename,".sas",""));
+933         run;
+934        
+935         proc sql noprint;
+936            select count(*)
+937             into :file_count
+938             from drivers;
+939         quit;
+940        
+941         x echo File Count = &file_count;
+942        
+943        proc sql noprint;
+944            select filename into: file1 - :file%left(&file_count.)
+945            from drivers;
+946        quit;
+947        
+948        data test;
+949        
+950        %macro rename(lib=);
+951        
+952        %let main = %sysfunc(scan(&mainlib.,-1));;
+953        %let comp = %sysfunc(scan(&complib.,-1));;
+954        
+955        x echo Starting Lib &lib.;
+956        %if &lib. ne &lib1. %then %do;
+957        x cd &drivlib.drivers;
+958        x cp -p t_*.sas /arenv/arwork/gsk4182136/mid215199/iss_01/test/drivers/;
+959        %end;
+960        x cd &complib.drivers/;
+961        %do i = 1 %to &file_count; ;
+962        x echo Rename file &&file&i;
+963        %if &i = 1 %then %do;
+964        x echo Main = &main;
+965        x echo Comp = &comp;
+966        %end;
+18                                                         The SAS System                             12:00 Wednesday, March 1, 2023
+
+967        
+968            x cp -p &drivlib.drivers/&&file&i...sas &complib.drivers/&&file&i.._&lib..sas;
+969            x sed -i "s+&main/+&main/&comp/+" &complib.drivers/&&file&i.._&lib..sas;
+970            x sed -i 's+arprod/+arwork/+' &complib.drivers/&&file&i.._&lib..sas;
+971            x sed -i "s+/adamdata+/adamdata/\&lib+g" &complib.drivers/&&file&i.._&lib..sas;
+972            x sed -i "s/\.sas\>/_\&lib\.sas/g" &complib.drivers/&&file&i.._&lib..sas;
+973            x sed -i "s+/&&file&i..\>+/&&file&i.._&lib.+g"  &complib.drivers/&&file&i.._&lib..sas;
+974            x cd &complib.saslogs/;
+975            x sas ../drivers/&&file&i.._&lib..sas;
+976        %end;
+977        %mend;
+978        
+979        %do d = 1 %to &compn.;
+980        %rename(lib=&&lib&d..);
+981        **ISS data filtered on specific study for comparison;
+982        %rename(lib=&&lib&d..C);
+983        %end;
+984        
+985        
+986        run;
+987        
+988        %macro compare_displays(ddlib=);
+989        
+990        data files;
+991         keep filename n rc;
+992         length fref $8 filename $80;
+993         rc = filename(fref, "&drivlib.drivers/");
+994             if rc = 0 then
+995             do;
+996             did = dopen(fref);
+997             rc = filename(fref);
+998             end;
+999             dnum = dnum(did);
+1000            do i = 1 to dnum;
+1001            filename = dread(did, i);
+1002            n = i;
+1003            /* If this entry is a file, then output. */
+1004            fid = mopen(did, filename);
+1005            if fid > 0
+1006            then
+1007            output;
+1008            end;
+1009            rc = dclose(did);
+1010        run;
+1011       
+1012        data files;
+1013           set files (where=(index(filename,"t_")>0));
+1014       
+1015           filename=compress(tranwrd(filename,".sas",""));
+1016        run;
+1017       
+1018        proc sql noprint;
+1019           select count(*)
+1020            into :file_count
+1021            from files;
+1022        quit;
+1023       
+1024        %put &file_count;
+19                                                         The SAS System                             12:00 Wednesday, March 1, 2023
+
+1025       
+1026       proc sql noprint;
+1027           select filename into: file1 - :file%left(&file_count.)
+1028           from files;
+1029       quit;
+1030       
+1031       
+1032       libname dddatac &ddlib.;
+1033       
+1034        %*- SET SYSTEM OPTIONS LOCALLY FOR THIS MACRO;
+1035          %* we are going to create a lot of output (e.g. proc compare) so set pagesize to max ;
+1036          %* first, save the current options so that we can restore at end of macro ;
+1037          %let original_PS = %sysfunc(getoption(PS));
+1038          %let original_ORIENTATION = %sysfunc(getoption(orientation));
+1039          options ps=max orientation=landscape;
+1040       
+1041          %* Setup ODS output for PDF file with name using macro parameter (filein) ;
+1042          %* with system date attached e.g. /path/to/file/name_27JUL21.pdf          ;
+1043          %* where filein=/path/to/file/name                                        ;
+1044          ods listing close;
+1045          ods noresults;
+1046          ods pdf file="&comploc.DDData_Compare.pdf";
+1047       
+1048          %macro comp_loop(lib=);
+1049          %do i = 1 %to &file_count; ;
+1050        %* define a value to accumulate all the proc compare results into;
+1051           %let compres=0;
+1052       
+1053          %* Loop through every dataset in the original/old library and proc compare ;
+1054          %* with the dataset of same name in the new library.                       ;
+1055             title  "Compare of display";
+1056             title2 "from- &lib";
+1057             title3 "to- ISS";
+1058             proc compare base=dddataC.&&file&i.._&lib.
+1059                          compare=dddataC.&&file&i.._&lib.C
+1060                          listall                  /* List all vars and obs differences */
+1061                          maxprint=(50,2000);      /* limit diffs reported (per-var,total)*/
+1062             run;
+1063             %* accumulate the sysinfo (which is a binary value);
+1064             %let compres = %sysfunc(bOR(&sysinfo, &compres.));
+1065          %end;
+1066          %mend comp_loop;
+1067          %do d = 1 %to &compn.;
+1068          %comp_loop(lib=&&lib&d..);
+1069          %end;
+1070         ods pdf close;
+1071       
+1072          %* TIDY UP;
+1073       
+1074          %* restore the original PS (pagesize) option ;
+1075          options PS=&original_PS orientation=&original_ORIENTATION;
+1076       
+1077       %mend compare_displays;
+1078       
+1079       %compare_displays(ddlib="&complib.dddata");
+1080       
+1081       
+1082       %end;
+20                                                         The SAS System                             12:00 Wednesday, March 1, 2023
+
+1083       
+1084       %mend iss_comparison;
+1085       
+1086       
+1087       
+1088       
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           0.02 seconds
+      cpu time            0.02 seconds
+      
