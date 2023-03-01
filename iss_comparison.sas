@@ -111,19 +111,18 @@
 %let filter1=%str(STUDYID = "STUDY1");
 %let filter2=%str(STUDYID = "STUDY2");
 %let filter3=%str(STUDYID = "STUDY3");
-%let csv = %str(/arenv/arwork/gsk4182136/mid215199/iss_01/refdata/ISS_Var_Rename.csv);
+%let csv = %str(/mnt/code/CSV/ISS_Var_Rename.csv);
 %let complib1=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY1');
 %let complib2=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY2');
 %let complib3=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY3');
-%let comploc=%str(/arenv/arwork/gsk4182136/mid215199/iss_01/qc/Compares/);
+%let comploc=%str(/mnt/code/ISS/Compares/);
 %let compfilt1=;
 %let compfilt2=;
 %let compfilt3=;
 %let compfilt4=;
 %let compfilt5=;
-%let comploc=%str(/arenv/arwork/gsk4182136/mid215199/iss_01/qc/Compares/);
-%let disp = Y;
-%let drivlib = %str(/arenv/arprod/gsk4182136/mid215199/iss_01/);
+%let disp = N;
+%let drivlib = %str(/mnt/code/ISS/);
 */
 
 %if &datac= Y %then %do;
