@@ -63,7 +63,9 @@
 %macro iss_comparison(
         folder =N,
         mainlib=,
+		mainlib_data=,
         complib=,
+		complib_data=,
         compn=,
         ds_remove =,
         lib1=,
@@ -675,8 +677,8 @@ run;
    
     %do t = 1 %to &compn;
         %if &in.=&ds1. %then %do;
-            libname compc "&complib.adamdata/&lib.C";
-            libname comp "&complib.adamdata/&lib.";
+            libname compc "&complib_data.adamdata/&lib.C";
+            libname comp "&complib_data.adamdata/&lib.";
         %end;
     %end;
 
@@ -920,7 +922,31 @@ libname dddatac &ddlib.;
 %end;
 
 %mend iss_comparison;
-
+%iss_comparison(
+mainlib_data=%str(/mnt/data/US_PhUSE_ISS_Tool/ISS/),
+mainlib=%str(/mnt/code/ISS/),
+complib=%str(/mnt/code/ISS/test/),
+complib_data=%str(/mnt/data/US_PhUSE_ISS_Tool/test/),
+compn=3,
+ds_remove =("NONE"),
+lib1=STUDY1,
+lib2=STUDY2,
+lib3=STUDY3,
+filter1=%str(STUDYID = "STUDY1"),
+filter2=%str(STUDYID = "STUDY2"),
+filter3=%str(STUDYID = "STUDY3"),
+csv = %str(/mnt/code/CSV/ISS_Var_Rename.csv),
+complib1=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY1'),
+complib2=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY2'),
+complib3=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY3'),
+comploc=%str(/mnt/code/ISS/Compares/),
+compfilt1=,
+compfilt2=,
+compfilt3=,
+compfilt4=,
+compfilt5=,
+disp = N);
+%let drivlib = %str(/mnt/code/ISS/);
 
 
 
