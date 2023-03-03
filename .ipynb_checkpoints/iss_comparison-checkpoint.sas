@@ -763,7 +763,7 @@ data copy;
   x cd &drivlib.drivers;
   x cp -p t_*.sas &complib.drivers/;
   x echo Copy macros from prod into test area;
-  x cd &drivlib.code;
+  x cd &mainlib.code;
   x cp -p rd_*.sas &complib.code/;
   x cp -p td_*.sas &complib.code/;
   x cp -p tu_*.sas &complib.code/;
