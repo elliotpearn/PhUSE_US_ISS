@@ -119,7 +119,7 @@
 %let complib1=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY1');
 %let complib2=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY2');
 %let complib3=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY3');
-%let comploc=%str(/mnt/code/ISS/Compares/);
+%let comploc=%str(\mnt\code\ISS\Compares\);
 %let compfilt1=;
 %let compfilt2=;
 %let compfilt3=;
@@ -315,8 +315,8 @@ libname &&lib&k.. &&complib&k..;
 %test;
 
 %macro assign_trt(lib=);
-data adsl_&lib.;
-    set &lib..adsl (drop=trt01p trt01pn trt01a trt01an);
+data adsl_&lib. (drop=_:);
+    set &lib..adsl (rename=(trt01p=_trt01p trt01pn=_trt01pn trt01a=_trt01a trt01an=_trt01an));
 
       ****STUDY SPECIFIC CODE - THIS WILL NEED TO BE UPDATED;
       ***Reassign Treatment Variables to previous studies so they match ISS;
@@ -673,7 +673,7 @@ run;
    %* where filein=/path/to/file/name                                        ;
    ods listing close;
    ods noresults;
-   ods pdf file="&comploc.&in._Data_Compare.pdf";
+   ods pdf file="/mnt/code/Compares/&in._Data_Compare.pdf";
 
    %macro comp_loop(lib=);
    
@@ -940,7 +940,7 @@ csv = %str(/mnt/code/CSV/ISS_Var_Rename.csv),
 complib1=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY1'),
 complib2=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY2'),
 complib3=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY3'),
-comploc=%str(/mnt/code/ISS/Compares/),
+comploc=%str(\mnt\code\ISS\Compares\),
 compfilt1=,
 compfilt2=,
 compfilt3=,
