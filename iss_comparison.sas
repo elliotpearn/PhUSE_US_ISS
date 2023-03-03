@@ -313,14 +313,14 @@ libname &&lib&k.. &&complib&k..;
 %end;
 %mend;
 %test;
-/*
+
 %macro assign_trt(lib=);
 data adsl_&lib.;
     set &lib..adsl (drop=trt01p trt01pn trt01a trt01an);
 
       ****STUDY SPECIFIC CODE - THIS WILL NEED TO BE UPDATED;
       ***Reassign Treatment Variables to previous studies so they match ISS;
-      length trt01p trt01a $26 tr01pg1 tr01ag1 $10 tr01pg2 tr01ag2 $21 tr01pg3 tr01ag3 $30 tr01pg4 tr01ag4 $15;
+      length trt01p trt01a $26 tr01pg1 tr01ag1 $10 tr01pg2 tr01ag2 $21;
 
       **Planned Treatments; 
     if STUDYID = "STUDY1" then do;
@@ -439,7 +439,7 @@ libname comp "&complib_data.adamdata/&lib./";
 
    run;
  %end;
-
+/*
 **Import CSV file for renaming variables - all variables that are in both studies just with diff names;
 %if &null. ne 1 %then %do;
 proc import datafile="&csv."
@@ -638,7 +638,7 @@ run;
    %let k = %eval(&k + 1);
 %end;
 %end;
-
+*/
 %mend assign_trt;
 **Specify list of libraries and run macro through them;
 %local q next_lib;
@@ -650,16 +650,16 @@ run;
 %end;
 
 %mend ds_comp_ready;
-%macro test;
+%macro comp_ready;
 %do g = 1 %to &ds_count.;
    %ds_comp_ready(inds=&&ds&g..);
 %end;
-%mend test;
-%test;
+%mend comp_ready;
+%comp_ready;
 
 ***Now run macro to compare datasets;
 %macro compare_dd (in=,comp=);
-  %tu_putglobals(varsin=g_fnc);
+
    %*- SET SYSTEM OPTIONS LOCALLY FOR THIS MACRO;
    %* we are going to create a lot of output (e.g. proc compare) so set pagesize to max ;
    %* first, save the current options so that we can restore at end of macro ;
@@ -726,7 +726,7 @@ run;
 %end;
 
 %end;
-*/
+
 ******** DISPLAY COMPARISON SECTION *****************;
 %if &disp = Y %then %do;
 **** SAS 2 TERMINAL CODE  ****;
@@ -758,7 +758,7 @@ data drivers;
  do c = 1 to dnum;
  filename = dread(did, c);
  n = c;
- /* If this entry is a file, then output. */
+
  fid = mopen(did, filename);
  if fid > 0
  then
@@ -825,7 +825,6 @@ x echo Comp = &comp;
 
 
 run;
-
 %macro compare_displays(ddlib=);
 
 data files;
@@ -841,7 +840,7 @@ data files;
      do i = 1 to dnum;
      filename = dread(did, i);
      n = i;
-     /* If this entry is a file, then output. */
+
      fid = mopen(did, filename);
      if fid > 0
      then
@@ -898,8 +897,8 @@ libname dddatac &ddlib.;
       title3 "to- ISS";
       proc compare base=dddataC.&&file&i.._&lib.
                    compare=dddataC.&&file&i.._&lib.C
-                   listall                  /* List all vars and obs differences */
-                   maxprint=(50,2000);      /* limit diffs reported (per-var,total)*/
+                   listall                  
+                   maxprint=(50,2000);     
       run;
       %* accumulate the sysinfo (which is a binary value);
       %let compres = %sysfunc(bOR(&sysinfo, &compres.));
