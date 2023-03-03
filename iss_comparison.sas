@@ -695,7 +695,17 @@ run;
             libname compc "&complib_data.adamdata/&lib.C";
             libname comp "&complib_data.adamdata/&lib.";
         %end;
+		%if &in = adae %then %do;
+		data sort_ds_&lib.;
+		set comp.ADAE;
+	    run;
+		proc sort data=sort_ds_&lib. out=comp.ADAE;
+			by usubjid studyid aeseq astdt aendt;
+	    run;
+		%end;
     %end;
+
+
 
  %* define a value to accumulate all the proc compare results into;
 %let compres=0;
@@ -705,6 +715,7 @@ run;
       title  "Compare of &in.";
       title2 "from- &lib";
       title3 "to- ISS";
+	
       proc compare base=comp.&in.
                    compare=compc.&in.
                    listall                  
