@@ -945,8 +945,8 @@ compfilt2=,
 compfilt3=,
 compfilt4=,
 compfilt5=,
-disp = N);
-%let drivlib = %str(/mnt/code/ISS/);
+disp = N,
+drivlib = %str(/mnt/code/ISS/));
 
 
 
