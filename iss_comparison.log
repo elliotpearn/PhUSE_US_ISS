@@ -1,4 +1,4 @@
-1                                                          The SAS System                                16:00 Friday, March 3, 2023
+1                                                          The SAS System                                16:02 Friday, March 3, 2023
 
 NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
 NOTE: All registry changes will be lost at the end of the session.
@@ -20,7 +20,7 @@ NOTE: Additional host information:
 
 NOTE: SAS initialization used:
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 1          /******************Header Template V2***************************************
 2          | Program Name: iss_comparison.sas
@@ -58,7 +58,7 @@ NOTE: SAS initialization used:
 34         |                         OLD_VAR - Name of variable in origin study
 35         |                         NEW_VAR - Name of variable in ISS study
 36         |
-2                                                          The SAS System                                16:00 Friday, March 3, 2023
+2                                                          The SAS System                                16:02 Friday, March 3, 2023
 
 37         |
 38         | COMPLOC               Specifies the desired location of the Compare PDFs               (None)
@@ -118,7 +118,7 @@ NOTE: SAS initialization used:
 92                 compfilt4=,
 93                 compfilt5=,
 94                 compfilt6=,
-3                                                          The SAS System                                16:00 Friday, March 3, 2023
+3                                                          The SAS System                                16:02 Friday, March 3, 2023
 
 95                 csv =,
 96                 comploc =,
@@ -178,7 +178,7 @@ NOTE: SAS initialization used:
 150          call symput("pkdata","&createlib./pkdata/");
 151          call symput("rawdata","&createlib./rawdata/");
 152          call symput("refdata","&createlib./refdata/");
-4                                                          The SAS System                                16:00 Friday, March 3, 2023
+4                                                          The SAS System                                16:02 Friday, March 3, 2023
 
 153          call symput("logs","&createlib./saslogs/");
 154          call symput("sdtm","&createlib./sdtm/");
@@ -238,7 +238,7 @@ NOTE: SAS initialization used:
 209            %end;
 210          %let rc=%sysfunc(close(&dsid));
 211        %mend create;
-5                                                          The SAS System                                16:00 Friday, March 3, 2023
+5                                                          The SAS System                                16:02 Friday, March 3, 2023
 
 213        %global lib_list;
 214        %let lib_list = %create;
@@ -298,7 +298,7 @@ NOTE: SAS initialization used:
 268             run;
 269        
 270            **Count datasets;
-6                                                          The SAS System                                16:00 Friday, March 3, 2023
+6                                                          The SAS System                                16:02 Friday, March 3, 2023
 
 271            %global ds_count;
 272             proc sql noprint;
@@ -358,7 +358,7 @@ NOTE: SAS initialization used:
 326        		  tr01ag1 = "Actual Pooled Treatment 1 for Period 01"
 327        		  tr01ag1n = "Actual Pooled Trt 1 for Period 01 (N)"
 328        		  tr01pg2 = "Planned Pooled Treatment 2 for Period 01"
-7                                                          The SAS System                                16:00 Friday, March 3, 2023
+7                                                          The SAS System                                16:02 Friday, March 3, 2023
 
 329        		  tr01pg2n = "Planned Pooled Trt 2 for Period 01 (N)"
 330        		  tr01ag2 = "Actual Pooled Treatment 2 for Period 01"
@@ -418,7 +418,7 @@ NOTE: SAS initialization used:
 384        
 385        		**Actual pooled;
 386        		if trt01a= "Placebo" then do;
-8                                                          The SAS System                                16:00 Friday, March 3, 2023
+8                                                          The SAS System                                16:02 Friday, March 3, 2023
 
 387        			tr01ag1 = "Placebo";
 388        			tr01ag1n = 1;
@@ -478,7 +478,7 @@ NOTE: SAS initialization used:
 442        
 443            data comp.&inds.;
 444                null = 1;
-9                                                          The SAS System                                16:00 Friday, March 3, 2023
+9                                                          The SAS System                                16:02 Friday, March 3, 2023
 
 445            run;
 446        
@@ -538,7 +538,7 @@ NOTE: SAS initialization used:
 500            separated by " "
 501            from rename_identify;
 502        quit;
-10                                                         The SAS System                                16:00 Friday, March 3, 2023
+10                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 503        
 504        **Create order variable;
@@ -598,7 +598,7 @@ NOTE: SAS initialization used:
 558            run;
 559        
 560            data sortedby;
-11                                                         The SAS System                                16:00 Friday, March 3, 2023
+11                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 561                set sashelp.vcolumn;
 562                where libname="ADAMDATA" and memname=upcase("&inds") and sortedby ne 0;
@@ -658,7 +658,7 @@ NOTE: SAS initialization used:
 616            set temp;
 617        
 618            %do i=&start %to &end;
-12                                                         The SAS System                                16:00 Friday, March 3, 2023
+12                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 619            %if %index(&sorted_list,%upcase(&&dsvn&i)) eq 0 %then %do;
 620            %if &&type&i eq char %then %do;
@@ -718,7 +718,7 @@ NOTE: SAS initialization used:
 674        ***Now run macro to compare datasets;
 675        %macro compare_dd (in=,comp=);
 676        
-13                                                         The SAS System                                16:00 Friday, March 3, 2023
+13                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 677           %*- SET SYSTEM OPTIONS LOCALLY FOR THIS MACRO;
 678           %* we are going to create a lot of output (e.g. proc compare) so set pagesize to max ;
@@ -778,7 +778,7 @@ NOTE: SAS initialization used:
 732            %let s=1;
 733            %do %while (%scan(&lib_list, &s) ne );
 734               %let next_lib = %scan(&lib_list, &s);
-14                                                         The SAS System                                16:00 Friday, March 3, 2023
+14                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 735               %comp_loop(lib=&next_lib);
 736               %let s = %eval(&s + 1);
@@ -809,7 +809,7 @@ NOTE: SAS initialization used:
 761          x cd &drivlib.drivers;
 762          x cp -p t_*.sas &complib.drivers/;
 763          x echo Copy macros from prod into test area;
-764          x cd &mainlib.code;
+764          x cd /mnt/code/code;
 765          x cp -p rd_*.sas &complib.code/;
 766          x cp -p td_*.sas &complib.code/;
 767          x cp -p tu_*.sas &complib.code/;
@@ -838,7 +838,7 @@ NOTE: SAS initialization used:
 790         rc = dclose(did);
 791         run;
 792        
-15                                                         The SAS System                                16:00 Friday, March 3, 2023
+15                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 793         data drivers;
 794            set drivers;
@@ -898,7 +898,7 @@ NOTE: SAS initialization used:
 848        
 849        
 850        run;
-16                                                         The SAS System                                16:00 Friday, March 3, 2023
+16                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 851        /*
 852        %macro compare_displays(ddlib=);
@@ -958,7 +958,7 @@ NOTE: SAS initialization used:
 906           %* with system date attached e.g. /path/to/file/name_27JUL21.pdf          ;
 907           %* where filein=/path/to/file/name                                        ;
 908           ods listing close;
-17                                                         The SAS System                                16:00 Friday, March 3, 2023
+17                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 909           ods noresults;
 910           ods pdf file="&comploc.DDData_Compare.pdf";
@@ -1018,7 +1018,7 @@ NOTE: SAS initialization used:
 964        complib2=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY2'),
 965        complib3=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY3'),
 966        comploc=%str(\mnt\code\ISS\Compares\),
-18                                                         The SAS System                                16:00 Friday, March 3, 2023
+18                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 967        compfilt1=,
 968        compfilt2=,
@@ -1039,7 +1039,7 @@ NOTE: DATA statement used (Total process time):
 NOTE: The data set WORK.FILES has 2 observations and 1 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.02 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -1075,10 +1075,10 @@ NOTE: There were 22 observations read from the data set ADAMDATA.ADAE.
 NOTE: The data set COMP.ADAE has 12 observations and 104 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.08 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
-19                                                         The SAS System                                16:00 Friday, March 3, 2023
+19                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 NOTE: Libref COMP was successfully assigned as follows: 
       Engine:        V9 
@@ -1110,8 +1110,8 @@ NOTE: Data file COMP.ADAE.DATA is in a format that is native to another host, or
 NOTE: There were 22 observations read from the data set ADAMDATA.ADAE.
 NOTE: The data set COMP.ADAE has 1 observations and 104 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.08 seconds
-      cpu time            0.01 seconds
+      real time           0.07 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Libref COMP was successfully assigned as follows: 
@@ -1138,7 +1138,7 @@ NOTE: Libref ADAMDATA was successfully assigned as follows:
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/ISS/adamdata
 
-20                                                         The SAS System                                16:00 Friday, March 3, 2023
+20                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 NOTE: Data file COMP.ADAE.DATA is in a format that is native to another host, or the file encoding does not match the session 
       encoding. Cross Environment Data Access will be used, which might require additional CPU resources and might reduce 
@@ -1163,8 +1163,8 @@ NOTE: Data file COMP.ADSL.DATA is in a format that is native to another host, or
 NOTE: There were 30 observations read from the data set ADAMDATA.ADSL.
 NOTE: The data set COMP.ADSL has 10 observations and 46 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.08 seconds
-      cpu time            0.00 seconds
+      real time           0.06 seconds
+      cpu time            0.02 seconds
       
 
 GLOBAL DS1 adae
@@ -1188,7 +1188,7 @@ NOTE: There were 10 observations read from the data set STUDY1.ADSL.
 NOTE: The data set WORK.ADSL_STUDY1 has 10 observations and 55 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Libref COMP was successfully assigned as follows: 
@@ -1198,7 +1198,7 @@ NOTE: Libref COMP was successfully assigned as follows:
 NOTE: There were 12 observations read from the data set STUDY1.ADAE.
 NOTE: The data set WORK.ADAE_PRE has 12 observations and 106 variables.
 NOTE: DATA statement used (Total process time):
-21                                                         The SAS System                                16:00 Friday, March 3, 2023
+21                                                         The SAS System                                16:02 Friday, March 3, 2023
 
       real time           0.01 seconds
       cpu time            0.00 seconds
@@ -1209,8 +1209,8 @@ NOTE: There were 12 observations read from the data set WORK.ADAE_PRE.
 NOTE: There were 10 observations read from the data set WORK.ADSL_STUDY1.
 NOTE: The data set COMP.ADAE has 12 observations and 110 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.26 seconds
-      cpu time            0.01 seconds
+      real time           0.06 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -1258,7 +1258,7 @@ NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
-22                                                         The SAS System                                16:00 Friday, March 3, 2023
+22                                                         The SAS System                                16:02 Friday, March 3, 2023
 
       
 
@@ -1278,7 +1278,7 @@ NOTE: There were 13 observations read from the data set WORK.RENAM.
 NOTE: The data set WORK.RENAM_FORMAT has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 STUDY1_adae_cont
@@ -1293,8 +1293,8 @@ NOTE: DATA statement used (Total process time):
 
 NOTE: The data set WORK.DS_IN has 110 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.02 seconds
+      real time           0.02 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -1318,7 +1318,7 @@ NOTE: The data set WORK.RENAME_IDENTIFY has 3 observations and 4 variables.
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
-23                                                         The SAS System                                16:00 Friday, March 3, 2023
+23                                                         The SAS System                                16:02 Friday, March 3, 2023
 
       
 
@@ -1376,9 +1376,9 @@ NOTE: Table WORK.TEMP created, with 12 rows and 8 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
-24                                                         The SAS System                                16:00 Friday, March 3, 2023
+24                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 
 
@@ -1386,7 +1386,7 @@ NOTE: There were 12 observations read from the data set COMP.ADAE.
 NOTE: The data set WORK.TEMP2 has 12 observations and 107 variables.
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -1413,7 +1413,7 @@ NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -1438,7 +1438,7 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
       WHERE (libname='ADAMDATA') and (memname='ADAE') and (name='CQ02NAM');
 NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
-25                                                         The SAS System                                16:00 Friday, March 3, 2023
+25                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
@@ -1485,7 +1485,7 @@ NOTE: Libref COMP was successfully assigned as follows:
 NOTE: There were 1 observations read from the data set STUDY2.ADAE.
 NOTE: The data set WORK.ADAE_PRE has 1 observations and 105 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
+      real time           0.01 seconds
       cpu time            0.00 seconds
       
 
@@ -1494,11 +1494,11 @@ NOTE: There were 1 observations read from the data set WORK.ADAE_PRE.
 NOTE: There were 10 observations read from the data set WORK.ADSL_STUDY2.
 NOTE: The data set COMP.ADAE has 1 observations and 109 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.00 seconds
+      real time           0.06 seconds
+      cpu time            0.01 seconds
       
 
-26                                                         The SAS System                                16:00 Friday, March 3, 2023
+26                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 
 NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to 
@@ -1555,10 +1555,10 @@ NOTE: WORK.RENAM data set was successfully created.
 NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: PROCEDURE IMPORT used (Total process time):
       real time           0.02 seconds
-      cpu time            0.04 seconds
+      cpu time            0.03 seconds
       
 
-27                                                         The SAS System                                16:00 Friday, March 3, 2023
+27                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 
 NOTE: There were 13 observations read from the data set WORK.RENAM.
@@ -1618,7 +1618,7 @@ NOTE: DATA statement used (Total process time):
 
 NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
       WHERE (memname='ADAE') and (study='STUDY2');
-28                                                         The SAS System                                16:00 Friday, March 3, 2023
+28                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 NOTE: The data set WORK.RENAME_NUM has 2 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
@@ -1651,7 +1651,7 @@ NOTE: There were 5 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.SORTEDBY has 5 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 NOTE: PROCEDURE SQL used (Total process time):
@@ -1663,7 +1663,7 @@ NOTE: Table WORK.TEMP created, with 1 rows and 7 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.01 seconds
-      cpu time            0.02 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -1678,7 +1678,7 @@ NOTE: PROCEDURE SORT used (Total process time):
 NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
       WHERE (libname='COMP') and (memname='ADAE') and (name='AGEGR6');
 NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
-29                                                         The SAS System                                16:00 Friday, March 3, 2023
+29                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
@@ -1691,7 +1691,7 @@ NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -1709,7 +1709,7 @@ NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -1733,12 +1733,12 @@ NOTE: There were 1 observations read from the data set WORK.TEMP2.
 NOTE: There were 1 observations read from the data set WORK.TEMP_RENAM.
 NOTE: The data set COMP.ADAE has 1 observations and 107 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
+      real time           0.05 seconds
       cpu time            0.00 seconds
       
 
 
-30                                                         The SAS System                                16:00 Friday, March 3, 2023
+30                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 NOTE: There were 10 observations read from the data set STUDY3.ADSL.
 NOTE: The data set WORK.ADSL_STUDY3 has 10 observations and 46 variables.
@@ -1763,7 +1763,7 @@ NOTE: There were 9 observations read from the data set WORK.ADAE_PRE.
 NOTE: There were 10 observations read from the data set WORK.ADSL_STUDY3.
 NOTE: The data set COMP.ADAE has 9 observations and 100 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
+      real time           0.07 seconds
       cpu time            0.00 seconds
       
 
@@ -1798,7 +1798,7 @@ WORK.PARMS.PARMS.SLIST.
 1054           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
 1055           run;
 
-31                                                         The SAS System                                16:00 Friday, March 3, 2023
+31                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 NOTE: The infile '/mnt/code/CSV/ISS_Var_Rename.csv' is:
       Filename=/mnt/code/CSV/ISS_Var_Rename.csv,
@@ -1813,7 +1813,7 @@ NOTE: 13 records were read from the infile '/mnt/code/CSV/ISS_Var_Rename.csv'.
 NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 13 rows created in WORK.RENAM from /mnt/code/CSV/ISS_Var_Rename.csv.
@@ -1824,7 +1824,7 @@ NOTE: WORK.RENAM data set was successfully created.
 NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: PROCEDURE IMPORT used (Total process time):
       real time           0.02 seconds
-      cpu time            0.03 seconds
+      cpu time            0.04 seconds
       
 
 
@@ -1841,7 +1841,7 @@ NOTE: There were 13 observations read from the data set WORK.RENAM_FORMAT.
 NOTE: The data set WORK.DS_IN has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -1858,14 +1858,14 @@ NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
-32                                                         The SAS System                                16:00 Friday, March 3, 2023
+32                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 
 NOTE: Table WORK.RENAME_IDENTIFY created, with 2 rows and 4 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -1918,7 +1918,7 @@ NOTE: There were 5 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.SORTEDBY has 5 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-33                                                         The SAS System                                16:00 Friday, March 3, 2023
+33                                                         The SAS System                                16:02 Friday, March 3, 2023
 
       cpu time            0.00 seconds
       
@@ -1958,7 +1958,7 @@ NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -1976,9 +1976,9 @@ NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
-34                                                         The SAS System                                16:00 Friday, March 3, 2023
+34                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 
 
@@ -2038,10 +2038,10 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 10 observations read from the data set WORK.ADSL_STUDY1.
 NOTE: The data set COMP.ADSL has 10 observations and 55 variables.
 NOTE: DATA statement used (Total process time):
-35                                                         The SAS System                                16:00 Friday, March 3, 2023
+35                                                         The SAS System                                16:02 Friday, March 3, 2023
 
-      real time           0.06 seconds
-      cpu time            0.01 seconds
+      real time           0.05 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -2088,7 +2088,7 @@ NOTE: 13 records were read from the infile '/mnt/code/CSV/ISS_Var_Rename.csv'.
 NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 13 rows created in WORK.RENAM from /mnt/code/CSV/ISS_Var_Rename.csv.
@@ -2098,10 +2098,10 @@ NOTE: DATA statement used (Total process time):
 NOTE: WORK.RENAM data set was successfully created.
 NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: PROCEDURE IMPORT used (Total process time):
-36                                                         The SAS System                                16:00 Friday, March 3, 2023
+36                                                         The SAS System                                16:02 Friday, March 3, 2023
 
-      real time           0.04 seconds
-      cpu time            0.02 seconds
+      real time           0.02 seconds
+      cpu time            0.03 seconds
       
 
 
@@ -2109,7 +2109,7 @@ NOTE: There were 13 observations read from the data set WORK.RENAM.
 NOTE: The data set WORK.RENAM_FORMAT has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 STUDY1_adsl_cont
@@ -2140,7 +2140,7 @@ NOTE: Table WORK.RENAME_IDENTIFY created, with 2 rows and 4 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -2158,7 +2158,7 @@ NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
-37                                                         The SAS System                                16:00 Friday, March 3, 2023
+37                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 
 
@@ -2177,7 +2177,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -2200,14 +2200,14 @@ NOTE: DATA statement used (Total process time):
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Table WORK.TEMP created, with 10 rows and 4 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -2218,7 +2218,7 @@ NOTE: PROCEDURE SORT used (Total process time):
       cpu time            0.00 seconds
       
 
-38                                                         The SAS System                                16:00 Friday, March 3, 2023
+38                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 
 NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
@@ -2235,7 +2235,7 @@ NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -2253,7 +2253,7 @@ NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -2278,9 +2278,9 @@ NOTE: There were 10 observations read from the data set WORK.TEMP_RENAM.
 NOTE: The data set COMP.ADSL has 10 observations and 53 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.05 seconds
-39                                                         The SAS System                                16:00 Friday, March 3, 2023
+39                                                         The SAS System                                16:02 Friday, March 3, 2023
 
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -2288,7 +2288,7 @@ NOTE: There were 10 observations read from the data set STUDY2.ADSL.
 NOTE: The data set WORK.ADSL_STUDY2 has 10 observations and 55 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Libref COMP was successfully assigned as follows: 
@@ -2306,7 +2306,7 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 10 observations read from the data set WORK.ADSL_STUDY2.
 NOTE: The data set COMP.ADSL has 10 observations and 55 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
+      real time           0.05 seconds
       cpu time            0.00 seconds
       
 
@@ -2338,7 +2338,7 @@ WORK.PARMS.PARMS.SLIST.
 1105                       OLD_VAR  $
 1106                       NEW_VAR  $
 1107           ;
-40                                                         The SAS System                                16:00 Friday, March 3, 2023
+40                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 1108           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
 1109           run;
@@ -2367,7 +2367,7 @@ NOTE: WORK.RENAM data set was successfully created.
 NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: PROCEDURE IMPORT used (Total process time):
       real time           0.02 seconds
-      cpu time            0.02 seconds
+      cpu time            0.03 seconds
       
 
 
@@ -2398,7 +2398,7 @@ NOTE: PROCEDURE CONTENTS used (Total process time):
 NOTE: There were 55 observations read from the data set WORK.DS_IN.
 NOTE: The data set WORK.CONT_ALL has 55 observations and 42 variables.
 NOTE: DATA statement used (Total process time):
-41                                                         The SAS System                                16:00 Friday, March 3, 2023
+41                                                         The SAS System                                16:02 Friday, March 3, 2023
 
       real time           0.00 seconds
       cpu time            0.00 seconds
@@ -2408,7 +2408,7 @@ NOTE: Table WORK.RENAME_IDENTIFY created, with 2 rows and 4 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -2433,7 +2433,7 @@ NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
 NOTE: The data set WORK.RENAME_NUM has 2 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: PROCEDURE SQL used (Total process time):
@@ -2443,7 +2443,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -2458,12 +2458,12 @@ NOTE: PROCEDURE TRANSPOSE used (Total process time):
 
 NOTE: There were 2 observations read from the data set SASHELP.VCOLUMN.
       WHERE (libname='ADAMDATA') and (memname='ADSL') and (sortedby not = 0);
-42                                                         The SAS System                                16:00 Friday, March 3, 2023
+42                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 NOTE: The data set WORK.SORTEDBY has 2 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
 NOTE: PROCEDURE SQL used (Total process time):
@@ -2482,7 +2482,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 NOTE: There were 10 observations read from the data set COMP.ADSL.
 NOTE: The data set WORK.TEMP2 has 10 observations and 53 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.00 seconds
+      real time           0.01 seconds
       cpu time            0.00 seconds
       
 
@@ -2492,7 +2492,7 @@ NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -2510,7 +2510,7 @@ NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -2518,10 +2518,10 @@ NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
       WHERE (libname='ADAMDATA') and (memname='ADSL') and (name='AGEGR1N');
 NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
-43                                                         The SAS System                                16:00 Friday, March 3, 2023
+43                                                         The SAS System                                16:02 Friday, March 3, 2023
 
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -2545,7 +2545,7 @@ NOTE: There were 10 observations read from the data set WORK.TEMP2.
 NOTE: There were 10 observations read from the data set WORK.TEMP_RENAM.
 NOTE: The data set COMP.ADSL has 10 observations and 53 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
+      real time           0.05 seconds
       cpu time            0.00 seconds
       
 
@@ -2564,8 +2564,8 @@ NOTE: Libref COMP was successfully assigned as follows:
 NOTE: There were 10 observations read from the data set STUDY3.ADSL.
 NOTE: The data set WORK.ADSL_PRE has 10 observations and 38 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -2573,12 +2573,12 @@ NOTE: There were 10 observations read from the data set WORK.ADSL_STUDY3.
 NOTE: The data set COMP.ADSL has 10 observations and 46 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.05 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to 
-44                                                         The SAS System                                16:00 Friday, March 3, 2023
+44                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 WORK.PARMS.PARMS.SLIST.
 1110        /**********************************************************************
@@ -2638,7 +2638,7 @@ NOTE: PROCEDURE IMPORT used (Total process time):
 
 
 NOTE: There were 13 observations read from the data set WORK.RENAM.
-45                                                         The SAS System                                16:00 Friday, March 3, 2023
+45                                                         The SAS System                                16:02 Friday, March 3, 2023
 
 NOTE: The data set WORK.RENAM_FORMAT has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
@@ -2652,14 +2652,14 @@ NOTE: There were 13 observations read from the data set WORK.RENAM_FORMAT.
 NOTE: The data set WORK.DS_IN has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
 NOTE: The data set WORK.DS_IN has 46 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -2667,14 +2667,14 @@ NOTE: There were 46 observations read from the data set WORK.DS_IN.
 NOTE: The data set WORK.CONT_ALL has 46 observations and 42 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 NOTE: Table WORK.RENAME_IDENTIFY created, with 2 rows and 4 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -2698,7 +2698,7 @@ NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
       WHERE (memname='ADSL') and (study='STUDY3');
 NOTE: The data set WORK.RENAME_NUM has 2 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
-46                                                         The SAS System                                16:00 Friday, March 3, 2023
+46                                                         The SAS System                                16:02 Friday, March 3, 2023
 
       real time           0.00 seconds
       cpu time            0.00 seconds
@@ -2706,7 +2706,7 @@ NOTE: DATA statement used (Total process time):
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: PROCEDURE SQL used (Total process time):
@@ -2758,9 +2758,9 @@ NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-47                                                         The SAS System                                16:00 Friday, March 3, 2023
+47                                                         The SAS System                                16:02 Friday, March 3, 2023
 
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -2835,7 +2835,7 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 12 observations read from the data set WORK.SORT_DS_STUDY1.
 NOTE: The data set COMP.ADAE has 12 observations and 107 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.05 seconds
+      real time           0.06 seconds
       cpu time            0.00 seconds
       
 
@@ -2872,7 +2872,7 @@ NOTE: There were 12 observations read from the data set COMP.ADAE.
 NOTE: The data set WORK.SORT_DS_STUDY1 has 12 observations and 107 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -2880,7 +2880,7 @@ NOTE: There were 12 observations read from the data set WORK.SORT_DS_STUDY1.
 NOTE: The data set COMP.ADAE has 12 observations and 107 variables.
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.05 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Data file COMPC.ADAE.DATA is in a format that is native to another host, or the file encoding does not match the session 
@@ -2891,7 +2891,7 @@ NOTE: There were 12 observations read from the data set COMP.ADAE.
 NOTE: There were 12 observations read from the data set COMPC.ADAE.
 NOTE: PROCEDURE COMPARE used (Total process time):
       real time           0.04 seconds
-      cpu time            0.01 seconds
+      cpu time            0.02 seconds
       
 
 INFO: PROC COMPARE result for all datasets is [7184]
@@ -2913,7 +2913,7 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 1 observations read from the data set WORK.SORT_DS_STUDY2.
 NOTE: The data set COMP.ADAE has 1 observations and 107 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.06 seconds
+      real time           0.05 seconds
       cpu time            0.00 seconds
       
 
@@ -2928,7 +2928,7 @@ NOTE: There were 1 observations read from the data set COMP.ADAE.
 NOTE: The data set WORK.SORT_DS_STUDY2 has 1 observations and 107 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -2957,7 +2957,7 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 1 observations read from the data set WORK.SORT_DS_STUDY2.
 NOTE: The data set COMP.ADAE has 1 observations and 107 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.05 seconds
+      real time           0.06 seconds
       cpu time            0.00 seconds
       
 
@@ -2969,7 +2969,7 @@ NOTE: There were 1 observations read from the data set COMP.ADAE.
 NOTE: There were 1 observations read from the data set COMPC.ADAE.
 NOTE: PROCEDURE COMPARE used (Total process time):
       real time           0.03 seconds
-      cpu time            0.02 seconds
+      cpu time            0.01 seconds
       
 
 INFO: PROC COMPARE result for all datasets is [7184]
@@ -2992,50 +2992,50 @@ NOTE: There were 9 observations read from the data set WORK.SORT_DS_STUDY3.
 NOTE: The data set COMP.ADAE has 9 observations and 98 variables.
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.06 seconds
-      cpu time            0.00 seconds
-      
-
-NOTE: Libref COMPC was successfully assigned as follows: 
-      Engine:        V9 
-      Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3C
-NOTE: Libref COMP was successfully assigned as follows: 
-      Engine:        V9 
-      Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3
-
-NOTE: There were 9 observations read from the data set COMP.ADAE.
-NOTE: The data set WORK.SORT_DS_STUDY3 has 9 observations and 98 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
-      
-
-
-NOTE: There were 9 observations read from the data set WORK.SORT_DS_STUDY3.
-NOTE: The data set COMP.ADAE has 9 observations and 98 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.00 seconds
-      
-
-NOTE: Libref COMPC was successfully assigned as follows: 
-      Engine:        V9 
-      Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3C
-NOTE: Libref COMP was successfully assigned as follows: 
-      Engine:        V9 
-      Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3
-
-NOTE: There were 9 observations read from the data set COMP.ADAE.
-NOTE: The data set WORK.SORT_DS_STUDY3 has 9 observations and 98 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
       cpu time            0.01 seconds
       
 
+NOTE: Libref COMPC was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3C
+NOTE: Libref COMP was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3
+
+NOTE: There were 9 observations read from the data set COMP.ADAE.
+NOTE: The data set WORK.SORT_DS_STUDY3 has 9 observations and 98 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
 
 NOTE: There were 9 observations read from the data set WORK.SORT_DS_STUDY3.
 NOTE: The data set COMP.ADAE has 9 observations and 98 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.06 seconds
+      real time           0.05 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Libref COMPC was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3C
+NOTE: Libref COMP was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3
+
+NOTE: There were 9 observations read from the data set COMP.ADAE.
+NOTE: The data set WORK.SORT_DS_STUDY3 has 9 observations and 98 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 9 observations read from the data set WORK.SORT_DS_STUDY3.
+NOTE: The data set COMP.ADAE has 9 observations and 98 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.08 seconds
       cpu time            0.00 seconds
       
 
@@ -3047,7 +3047,7 @@ NOTE: There were 9 observations read from the data set COMP.ADAE.
 NOTE: There were 9 observations read from the data set COMPC.ADAE.
 NOTE: PROCEDURE COMPARE used (Total process time):
       real time           0.04 seconds
-      cpu time            0.01 seconds
+      cpu time            0.02 seconds
       
 
 INFO: PROC COMPARE result for all datasets is [7216]
@@ -3079,7 +3079,7 @@ NOTE: There were 10 observations read from the data set COMP.ADSL.
 NOTE: There were 10 observations read from the data set COMPC.ADSL.
 NOTE: PROCEDURE COMPARE used (Total process time):
       real time           0.03 seconds
-      cpu time            0.02 seconds
+      cpu time            0.01 seconds
       
 
 INFO: PROC COMPARE result for all datasets is [3120]
@@ -3109,7 +3109,7 @@ NOTE: There were 10 observations read from the data set COMP.ADSL.
 NOTE: There were 10 observations read from the data set COMPC.ADSL.
 NOTE: PROCEDURE COMPARE used (Total process time):
       real time           0.03 seconds
-      cpu time            0.02 seconds
+      cpu time            0.00 seconds
       
 
 INFO: PROC COMPARE result for all datasets is [7216]
@@ -3144,13 +3144,12 @@ NOTE: PROCEDURE COMPARE used (Total process time):
 
 INFO: PROC COMPARE result for all datasets is [7216]
 NOTE: ODS PDF printed 9 pages to /mnt/code/Compares/adsl_Data_Compare.pdf.
-ERROR: '/mnt/code/ISS/code' : No such directory.
-48                                                         The SAS System                                16:00 Friday, March 3, 2023
-
 NOTE: The data set WORK.COPY has 1 observations and 0 variables.
+48                                                         The SAS System                                16:02 Friday, March 3, 2023
+
 NOTE: DATA statement used (Total process time):
       real time           0.03 seconds
-      cpu time            0.00 seconds
+      cpu time            0.02 seconds
       
 
 
@@ -3181,7 +3180,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 
 NOTE: The data set WORK.TEST has 1 observations and 0 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.25 seconds
+      real time           0.26 seconds
       cpu time            0.02 seconds
       
 
@@ -3189,10 +3188,8 @@ NOTE: DATA statement used (Total process time):
 1138       
 1139       
 
-ERROR: Errors printed on page 47.
-
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           4.12 seconds
-      cpu time            0.86 seconds
+      real time           3.83 seconds
+      cpu time            0.87 seconds
       
