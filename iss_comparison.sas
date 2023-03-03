@@ -691,10 +691,8 @@ run;
    %macro comp_loop(lib=);
    
     %do t = 1 %to &compn;
-        %if &in.=&ds1. %then %do;
             libname compc "&complib_data.adamdata/&lib.C";
             libname comp "&complib_data.adamdata/&lib.";
-        %end;
 		%if &in = adae %then %do;
 		data sort_ds_&lib.;
 		set comp.ADAE;
