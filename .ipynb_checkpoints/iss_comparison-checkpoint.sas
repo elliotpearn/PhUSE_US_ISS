@@ -63,7 +63,9 @@
 %macro iss_comparison(
         folder =N,
         mainlib=,
+		mainlib_data=,
         complib=,
+		complib_data=,
         compn=,
         ds_remove =,
         lib1=,
@@ -101,10 +103,12 @@
 ************* USE IN ARWORK ONLY **************;
 ***********************************************;
 /*
-%let mainlib_data=%str(/mnt/data/US_PhUSE_ISS_Tool/ISS);
+%let mainlib_data=%str(/mnt/data/US_PhUSE_ISS_Tool/ISS/);
 %let mainlib=%str(/mnt/code/ISS/);
+%let complib=%str(/mnt/code/ISS/test/);
+%let complib_data=%str(/mnt/data/US_PhUSE_ISS_Tool/test/);
 %let compn=3;
-%let ds_remove =;
+%let ds_remove =("NONE");
 %let lib1=STUDY1;
 %let lib2=STUDY2;
 %let lib3=STUDY3;
@@ -131,10 +135,12 @@
 %macro create_lib;
 *Create a folder for comparison if required;
 %let createlib = %sysfunc(dequote(&complib.));
+%let createlib_data = %sysfunc(dequote(&complib_data.));
 
 data _null_;
   call symput("folder","&createlib.");
-  call symput("adam","&createlib./adamdata/");
+  call symput("folderd","&createlib_data.");
+  call symput("adam","&createlib_data./adamdata/");
   call symput("ardata","&createlib./ardata/");
   call symput("code","&createlib./code/");
   call symput("dddata","&createlib./dddata/");
@@ -149,6 +155,7 @@ data _null_;
 run;
 
 x "mkdir &folder";
+x "mkdir &folderd";
 x "mkdir &adam";
 x "mkdir &ardata";
 x "mkdir &code";
@@ -164,8 +171,8 @@ x "mkdir &sdtm";
 
 %do z = 1 %to &compn;
 data _null_;
-    call symput("crlib&z.C","&createlib.adamdata/&&lib&z..C/");
-    call symput("crlib&z.","&createlib.adamdata/&&lib&z../");
+    call symput("crlib&z.C","&createlib_data.adamdata/&&lib&z..C/");
+    call symput("crlib&z.","&createlib_data.adamdata/&&lib&z../");
 run;
 
 x "mkdir &&&crlib&z.C.";
@@ -214,7 +221,8 @@ run;
     %macro filter(lib=,dset_in=);
 
     **Read in current ADaMs and output to compare folder filtered for each origin study;
-    libname comp "&complib.adamdata/&lib.C";
+    libname comp "&complib_data.adamdata/&lib.C";
+	libname adamdata "&mainlib_data.adamdata";
     data comp.&dset_in;
         set adamdata.&dset_in;
 
@@ -231,7 +239,7 @@ run;
     data files;
      keep filename;
      length fref $8 filename $80;
-     rc = filename(fref, "&mainlib.adamdata/");
+     rc = filename(fref, "&mainlib_data.adamdata/");
      if rc = 0 then
      do;
      did = dopen(fref);
@@ -292,7 +300,6 @@ run;
     %end;
 %mend;
 %filter_dd;
-
 %put _global_;
 **Get origin datasets ready for compare:
   - Rederive treatment variables in ADSL and merge onto required datasets
@@ -300,9 +307,12 @@ run;
 %macro ds_comp_ready(inds=);
 
 *Individual Study ADaMs - check latests REs;
+%macro test;
 %do k = 1 %to &compn.;
 libname &&lib&k.. &&complib&k..;
 %end;
+%mend;
+%test;
 
 %macro assign_trt(lib=);
 data adsl_&lib.;
@@ -310,236 +320,82 @@ data adsl_&lib.;
 
       ****STUDY SPECIFIC CODE - THIS WILL NEED TO BE UPDATED;
       ***Reassign Treatment Variables to previous studies so they match ISS;
-      length trt01p trt01a $26 tr01pg1 tr01ag1 $10 tr01pg2 tr01ag2 $21 tr01pg3 tr01ag3 $30 tr01pg4 tr01ag4 $15;
+      length trt01p trt01a $26 tr01pg1 tr01ag1 $10 tr01pg2 tr01ag2 $21;
 
-      **Planned Treatments;
-      **Placebo arm from ICE;
-      if STUDYID eq "214367" then do;
-        if ARMCD = "P" then do;
-            trt01p = "Placebo";
-            trt01pn = 1;
-        end;
-        **Covers Gen 1 from ICE and Peak A;
-        else if ARMCD = "A" then do;
-            trt01p = "Sotrovimab Gen1 (500mg IV)";
-            trt01pn = 2;
-        end;
-      end;
-      else if STUDYID eq "216912" then do;
-        if ARMCD = "A" then do;
-            trt01p = "Sotrovimab Gen1 (500mg IV)";
-            trt01pn = 2;
-        end;
-        **Covers Gen2 IV from Peak A,B and C;
-        else if ARMCD in ("B" "D" "F")  then do;
-            trt01p = "Sotrovimab Gen2 (500mg IV)";
-            trt01pn = 3;
-        end;
-        **IM arm from Peak B;
-        else if ARMCD in ("C")  then do;
-            trt01p = "Sotrovimab Gen2 (500mg IM)";
-            trt01pn = 4;
-        end;
-        **IM arm from Peak C;
-         else if ARMCD in ("E")  then do;
-            trt01p = "Sotrovimab Gen2 (250mg IM)";
-            trt01pn = 5;
-        end;
-      end;
-      else if STUDYID eq "217114" then do;
-        if ARMCD in ("A")  then do;
-            trt01p = "Sotrovimab Gen2 (500mg IV)";
-            trt01pn = 3;
-        end;
-        else if ARMCD in ("B")  then do;
-            trt01p = "Sotrovimab Gen2 (500mg IM)";
-            trt01pn = 4;
-        end;
-        else if ARMCD in ("C")  then do;
-            trt01p = "Sotrovimab Gen2 (250mg IM)";
-            trt01pn = 5;
-        end;
-      end;
-      else if armcd = "NOTTRT" then do;
-            trt01p = "Not Treated";
-            trt01pn = 6;
-      end;
-      else if armcd = "SCRNFAIL" then do;
-            trt01p = "Screen Failure";
-            trt01pn = 0;
-      end;
+      **Planned Treatments; 
+    if STUDYID = "STUDY1" then do;
+	    if trt01pn = 2 then trt01p = "Study Drug Dose 1";
+	    if trt01an = 2 then trt01a = "Study Drug Dose 1";	
+    end;
+    if STUDYID = "STUDY2" then do;
+		if trt01pn = 3 then do; trt01p = "Study Drug Dose 4"; trt01pn = 5; end;
+	    if trt01an = 3 then do; trt01a = "Study Drug Dose 4"; trt01pn = 5; end;
 
-        **Actual Treatments;
-        **Placebo arm from ICE;
-      **Placebo arm from ICE;
-      if STUDYID eq "214367" then do;
-        if ACTARMCD = "P" then do;
-            TRT01A = "Placebo";
-            TRT01An = 1;
-        end;
-        **Covers Gen 1 from ICE and Peak A;
-        else if ACTARMCD = "A" then do;
-            TRT01A = "Sotrovimab Gen1 (500mg IV)";
-            TRT01An = 2;
-        end;
-      end;
-      else if STUDYID eq "216912" then do;
-        if ACTARMCD = "A" then do;
-            TRT01A = "Sotrovimab Gen1 (500mg IV)";
-            TRT01An = 2;
-        end;
-        **Covers Gen2 IV from Peak A,B and C;
-        else if ACTARMCD in ("B" "D" "F")  then do;
-            TRT01A = "Sotrovimab Gen2 (500mg IV)";
-            TRT01An = 3;
-        end;
-        **IM arm from Peak B;
-        else if ACTARMCD in ("C")  then do;
-            TRT01A = "Sotrovimab Gen2 (500mg IM)";
-            TRT01An = 4;
-        end;
-        **IM arm from Peak C;
-         else if ACTARMCD in ("E")  then do;
-            TRT01A = "Sotrovimab Gen2 (250mg IM)";
-            TRT01An = 5;
-        end;
-      end;
-      else if STUDYID eq "217114" then do;
-        if ACTARMCD in ("A")  then do;
-            TRT01A = "Sotrovimab Gen2 (500mg IV)";
-            TRT01An = 3;
-        end;
-        else if ACTARMCD in ("B")  then do;
-            TRT01A = "Sotrovimab Gen2 (500mg IM)";
-            TRT01An = 4;
-        end;
-         else if ACTARMCD in ("C")  then do;
-            TRT01A = "Sotrovimab Gen2 (250mg IM)";
-            TRT01An = 5;
-        end;
-      end;
-      else if ACTARMCD = "NOTTRT" then do;
-            TRT01A = "Not Treated";
-            TRT01An = 6;
-      end;
-      else if ACTARMCD = "SCRNFAIL" then do;
-            TRT01A = "Screen Failure";
-            TRT01An = 0;
-      end;
+    	if trt01pn = 2 then do; trt01p = "Study Drug Dose 3"; trt01pn = 4; end;
+	    if trt01an = 2 then do; trt01a = "Study Drug Dose 3"; trt01an = 4; end;
+	
+	    if trt01pn = 1 then do; trt01p = "Study Drug Dose 2"; trt01pn = 3; end;
+	    if trt01an = 1 then do; trt01a = "Study Drug Dose 2"; trt01an = 3; end;
+    end;
 
-        **Pooled Treatment - Planned;
-        **Sotrovimab vs Placebo;
-        if trt01pn = 1 then do;
-            tr01pg1 = "Placebo";
-            tr01pg1n = 1;
-        end;
-        else if trt01pn in (2,3,4,5) then do;
-            tr01pg1 = "Sotrovimab";
-            tr01pg1n = 2;
-        end;
-        **500IV vs 500IM vs 250IM vs Placebo;
-        if trt01pn = 1 then do;
-            tr01pg2 = "Placebo";
-            tr01pg2n = 1;
-        end;
-        else if trt01pn in (2,3) then do;
-            tr01pg2 = "Sotrovimab (500mg IV)";
-            tr01pg2n = 2;
-        end;
-        else if trt01pn in (4) then do;
-            tr01pg2 = "Sotrovimab (500mg IM)";
-            tr01pg2n = 3;
-        end;
-        else if trt01pn in (5) then do;
-            tr01pg2 = "Sotrovimab (250mg IM)";
-            tr01pg2n = 4;
-        end;
-        **500 IV/IM vs Placebo vs IM250;
-        if trt01pn in (1) then do;
-            tr01pg3 = "Placebo";
-            tr01pg3n = 1;
-        end;
-        else if trt01pn in (2,3,4 ) then do;
-            tr01pg3 = "Sotrovimab (500mg)";
-            tr01pg3n = 2;
-        end;
-        else if trt01pn in (5) then do;
-            tr01pg3 = "Sotrovimab (250mg IM)";
-            tr01pg3n = 3;
-        end;
-        **IV vs IM vs Placebo;
-        if trt01pn = 1 then do;
-            tr01pg4 = "Placebo";
-            tr01pg4n = 1;
-        end;        
-        else if trt01pn in (2,3) then do;
-            tr01pg4 = "Sotrovimab (IV)";
-            tr01pg4n = 2;
-        end;
-        else if trt01pn in (4,5) then do;
-            tr01pg4 = "Sotrovimab (IM)";
-            tr01pg4n = 3;
-        end;
+    if STUDYID = "STUDY3" then do;
+	    if trt01pn = 1 then do; trt01p = "Study Drug Dose 1"; trt01pn = 2; end;
+	    if trt01an = 1 then do; trt01a = "Study Drug Dose 1"; trt01an = 2; end;
+	
+	    if trt01pn = 2 then do; trt01p = "Study Drug Dose 2"; trt01pn = 3; end;
+	    if trt01an = 2 then do; trt01a = "Study Drug Dose 2"; trt01an = 3; end;
+    end;
 
-        **Pooled Treatment - Actual;
-        **Sotrovimab vs Placebo;
-        if trt01an = 1 then do;
-            tr01ag1 = "Placebo";
-            tr01ag1n = 1;
-        end;
-        else if trt01an in (2,3,4,5) then do;
-            tr01ag1 = "Sotrovimab";
-            tr01ag1n = 2;
-        end;
-        **500IV vs 500IM vs 250IM vs Placebo;
-        if trt01an = 1 then do;
-            tr01ag2 = "Placebo";
-            tr01ag2n = 1;
-        end;
-        else if trt01an in (2,3) then do;
-            tr01ag2 = "Sotrovimab (500mg IV)";
-            tr01ag2n = 2;
-        end;
-        else if trt01an in (4) then do;
-            tr01ag2 = "Sotrovimab (500mg IM)";
-            tr01ag2n = 3;
-        end;
-        else if trt01an in (5) then do;
-            tr01ag2 = "Sotrovimab (250mg IM)";
-            tr01ag2n = 4;
-        end;
-        **500 IV/IM vs Placebo/IM250;
-        if trt01an in (1) then do;
-            tr01ag3 = "Placebo";
-            tr01ag3n = 1;
-        end;
-        else if trt01an in (2,3,4 ) then do;
-            tr01ag3 = "Sotrovimab (500mg)";
-            tr01ag3n = 2;
-        end;
-        else if trt01an in (5) then do;
-            tr01ag3 = "Sotrovimab (250mg IM)";
-            tr01ag3n = 3;
-        end;
-        **IV vs IM vs Placebo;
-        if trt01an = 1 then do;
-            tr01ag4 = "Placebo";
-            tr01ag4n = 1;
-        end;        
-        else if trt01an in (2,3) then do;
-            tr01ag4 = "Sotrovimab (IV)";
-            tr01ag4n = 2;
-        end;
-        else if trt01an in (4,5) then do;
-            tr01ag4 = "Sotrovimab (IM)";
-            tr01ag4n = 3;
-        end;
+	  **Pooled Treatments;
+		if trt01p= "Placebo" then do;
+			tr01pg1 = "Placebo";
+			tr01pg1n = 1;
+		end;
+	    else do;
+	        tr01pg1 = "Study Drug";
+			tr01pg1n = 2;
+	    end;
+
+		if trt01p= "Placebo" then do;
+			tr01pg2 = "Placebo";
+			tr01pg2n = 1;
+		end;
+	    if trt01pn in (2,3) then do;
+	        tr01pg2 = "Study Drug Dose 1 & 2";
+	        tr01pg2n = 2;
+	    end;
+	    else if trt01pn in (4,5) then do;
+	        tr01pg2 = "Study Drug Dose 3 & 4";
+	        tr01pg2n = 3;
+	    end;
+
+		**Actual pooled;
+		if trt01a= "Placebo" then do;
+			tr01ag1 = "Placebo";
+			tr01ag1n = 1;
+		end;
+	    else do;
+	        tr01ag1 = "Study Drug";
+			tr01ag1n = 2;
+	    end;
+		if trt01a= "Placebo" then do;
+			tr01ag2 = "Placebo";
+			tr01ag2n = 1;
+		end;
+	    if trt01an in (2,3) then do;
+	        tr01ag2 = "Study Drug Dose 1 & 2";
+	        tr01ag2n = 2;
+	    end;
+	    else if trt01an in (4,5) then do;
+	        tr01ag2 = "Study Drug Dose 3 & 4";
+	        tr01ag2n = 3;
+	    end;
 
 run;
 
 **If NON-ADSL dataset is required for TLF comparison - then merge rederived treatments onto old dataset;
 **If ADSL then just rename dataset to be in correct format;
-libname comp "&complib.adamdata/&lib./";
+libname comp "&complib_data.adamdata/&lib./";
 
 %do k = 1 %to &compn.;
    %if %sysfunc(exist(&lib..&inds.)) %then %do;
@@ -560,7 +416,7 @@ libname comp "&complib.adamdata/&lib./";
  %if %upcase(&inds.) ne ADSL %then %do;
   %if %sysfunc(exist(&lib..&inds.)) %then %do;
    data comp.&inds.;
-    merge &inds._pre (drop=trt0: in=inDS) adsl_&lib. (keep=studyid usubjid trt0: tr0:);
+    merge &inds._pre (drop=trt0: trtp trtpn trta trtan  in=inDS) adsl_&lib. (keep=studyid usubjid trt0: tr0:);
     by studyid usubjid;
 
     if inDS;
@@ -583,7 +439,7 @@ libname comp "&complib.adamdata/&lib./";
 
    run;
  %end;
-
+/*
 **Import CSV file for renaming variables - all variables that are in both studies just with diff names;
 %if &null. ne 1 %then %do;
 proc import datafile="&csv."
@@ -782,7 +638,7 @@ run;
    %let k = %eval(&k + 1);
 %end;
 %end;
-
+*/
 %mend assign_trt;
 **Specify list of libraries and run macro through them;
 %local q next_lib;
@@ -794,16 +650,16 @@ run;
 %end;
 
 %mend ds_comp_ready;
-%macro test;
+%macro comp_ready;
 %do g = 1 %to &ds_count.;
    %ds_comp_ready(inds=&&ds&g..);
 %end;
-%mend test;
-%test;
+%mend comp_ready;
+%comp_ready;
 
 ***Now run macro to compare datasets;
 %macro compare_dd (in=,comp=);
-  %tu_putglobals(varsin=g_fnc);
+
    %*- SET SYSTEM OPTIONS LOCALLY FOR THIS MACRO;
    %* we are going to create a lot of output (e.g. proc compare) so set pagesize to max ;
    %* first, save the current options so that we can restore at end of macro ;
@@ -822,8 +678,8 @@ run;
    
     %do t = 1 %to &compn;
         %if &in.=&ds1. %then %do;
-            libname compc "&complib.adamdata/&lib.C";
-            libname comp "&complib.adamdata/&lib.";
+            libname compc "&complib_data.adamdata/&lib.C";
+            libname comp "&complib_data.adamdata/&lib.";
         %end;
     %end;
 
@@ -837,9 +693,9 @@ run;
       title3 "to- ISS";
       proc compare base=comp.&in.
                    compare=compc.&in.
-                   listall                  /* List all vars and obs differences */
-                   maxprint=(50,2000);      /* limit diffs reported (per-var,total)*/
-      run;
+                   listall                  
+				   maxprint=(50,2000);
+	  run;
       %* accumulate the sysinfo (which is a binary value);
       %let compres = %sysfunc(bOR(&sysinfo, &compres.));
 
@@ -902,7 +758,7 @@ data drivers;
  do c = 1 to dnum;
  filename = dread(did, c);
  n = c;
- /* If this entry is a file, then output. */
+
  fid = mopen(did, filename);
  if fid > 0
  then
@@ -969,7 +825,6 @@ x echo Comp = &comp;
 
 
 run;
-
 %macro compare_displays(ddlib=);
 
 data files;
@@ -985,7 +840,7 @@ data files;
      do i = 1 to dnum;
      filename = dread(did, i);
      n = i;
-     /* If this entry is a file, then output. */
+
      fid = mopen(did, filename);
      if fid > 0
      then
@@ -1042,8 +897,8 @@ libname dddatac &ddlib.;
       title3 "to- ISS";
       proc compare base=dddataC.&&file&i.._&lib.
                    compare=dddataC.&&file&i.._&lib.C
-                   listall                  /* List all vars and obs differences */
-                   maxprint=(50,2000);      /* limit diffs reported (per-var,total)*/
+                   listall                  
+                   maxprint=(50,2000);     
       run;
       %* accumulate the sysinfo (which is a binary value);
       %let compres = %sysfunc(bOR(&sysinfo, &compres.));
@@ -1067,7 +922,31 @@ libname dddatac &ddlib.;
 %end;
 
 %mend iss_comparison;
-
+%iss_comparison(
+mainlib_data=%str(/mnt/data/US_PhUSE_ISS_Tool/ISS/),
+mainlib=%str(/mnt/code/ISS/),
+complib=%str(/mnt/code/ISS/test/),
+complib_data=%str(/mnt/data/US_PhUSE_ISS_Tool/test/),
+compn=3,
+ds_remove =("NONE"),
+lib1=STUDY1,
+lib2=STUDY2,
+lib3=STUDY3,
+filter1=%str(STUDYID = "STUDY1"),
+filter2=%str(STUDYID = "STUDY2"),
+filter3=%str(STUDYID = "STUDY3"),
+csv = %str(/mnt/code/CSV/ISS_Var_Rename.csv),
+complib1=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY1'),
+complib2=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY2'),
+complib3=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY3'),
+comploc=%str(/mnt/code/ISS/Compares/),
+compfilt1=,
+compfilt2=,
+compfilt3=,
+compfilt4=,
+compfilt5=,
+disp = N,
+drivlib = %str(/mnt/code/ISS/));
 
 
 
