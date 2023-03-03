@@ -317,7 +317,18 @@ libname &&lib&k.. &&complib&k..;
 %macro assign_trt(lib=);
 data adsl_&lib. (drop=_:);
     set &lib..adsl (rename=(trt01p=_trt01p trt01pn=_trt01pn trt01a=_trt01a trt01an=_trt01an));
-
+	label trt01p = "Planned Treatment for Period 01"
+		  trt01pn = "Planned Treatment for Period 01 (N)"
+		  trt01a = "Actual Treatment for Period 01"
+		  trt01an = "Actual Treatment for Period 01 (N)"
+		  tr01pg1 = "Planned Pooled Treatment 1 for Period 01"
+		  tr01pg1n = "Planned Pooled Trt 1 for Period 01 (N)"
+		  tr01ag1 = "Actual Pooled Treatment 1 for Period 01"
+		  tr01ag1n = "Actual Pooled Trt 1 for Period 01 (N)"
+		  tr01pg2 = "Planned Pooled Treatment 2 for Period 01"
+		  tr01pg2n = "Planned Pooled Trt 2 for Period 01 (N)"
+		  tr01ag2 = "Actual Pooled Treatment 2 for Period 01"
+		  tr01ag2n = "Actual Pooled Trt 2 for Period 01 (N)";
       ****STUDY SPECIFIC CODE - THIS WILL NEED TO BE UPDATED;
       ***Reassign Treatment Variables to previous studies so they match ISS;
       length trt01p trt01a $26 tr01pg1 tr01ag1 $10 tr01pg2 tr01ag2 $21;
