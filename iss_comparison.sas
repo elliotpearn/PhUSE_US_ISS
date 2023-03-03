@@ -439,9 +439,10 @@ libname comp "&complib_data.adamdata/&lib./";
 
    run;
  %end;
-/*
+
 **Import CSV file for renaming variables - all variables that are in both studies just with diff names;
 %if &null. ne 1 %then %do;
+
 proc import datafile="&csv."
 		out=renam dbms=csv replace;
 	getnames=YES;
@@ -638,7 +639,7 @@ run;
    %let k = %eval(&k + 1);
 %end;
 %end;
-*/
+
 %mend assign_trt;
 **Specify list of libraries and run macro through them;
 %local q next_lib;
