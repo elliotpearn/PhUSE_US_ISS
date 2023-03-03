@@ -322,28 +322,30 @@ data adsl_&lib. (drop=_:);
       ***Reassign Treatment Variables to previous studies so they match ISS;
       length trt01p trt01a $26 tr01pg1 tr01ag1 $10 tr01pg2 tr01ag2 $21;
 
-      **Planned Treatments; 
+   **Planned Treatments; 
     if STUDYID = "STUDY1" then do;
-	    if trt01pn = 2 then trt01p = "Study Drug Dose 1";
-	    if trt01an = 2 then trt01a = "Study Drug Dose 1";	
+	    if _trt01pn = 2 then do; trt01p = "Study Drug Dose 1"; trt01pn = 2; end; 
+		else do; trt01p = "Placebo"; trt01pn = 1; end;
+	    if _trt01an = 2 then do; trt01a = "Study Drug Dose 1";	trt01an = 2; end;
+		else do; trt01a = "Placebo"; trt01an = 1; end;
     end;
     if STUDYID = "STUDY2" then do;
-		if trt01pn = 3 then do; trt01p = "Study Drug Dose 4"; trt01pn = 5; end;
-	    if trt01an = 3 then do; trt01a = "Study Drug Dose 4"; trt01pn = 5; end;
+		if _trt01pn = 3 then do; trt01p = "Study Drug Dose 4"; trt01pn = 5; end;
+	    if _trt01an = 3 then do; trt01a = "Study Drug Dose 4"; trt01an = 5; end;
 
-    	if trt01pn = 2 then do; trt01p = "Study Drug Dose 3"; trt01pn = 4; end;
-	    if trt01an = 2 then do; trt01a = "Study Drug Dose 3"; trt01an = 4; end;
+    	if _trt01pn = 2 then do; trt01p = "Study Drug Dose 3"; trt01pn = 4; end;
+	    if _trt01an = 2 then do; trt01a = "Study Drug Dose 3"; trt01an = 4; end;
 	
-	    if trt01pn = 1 then do; trt01p = "Study Drug Dose 2"; trt01pn = 3; end;
-	    if trt01an = 1 then do; trt01a = "Study Drug Dose 2"; trt01an = 3; end;
+	    if _trt01pn = 1 then do; trt01p = "Study Drug Dose 2"; trt01pn = 3; end;
+	    if _trt01an = 1 then do; trt01a = "Study Drug Dose 2"; trt01an = 3; end;
     end;
 
     if STUDYID = "STUDY3" then do;
-	    if trt01pn = 1 then do; trt01p = "Study Drug Dose 1"; trt01pn = 2; end;
-	    if trt01an = 1 then do; trt01a = "Study Drug Dose 1"; trt01an = 2; end;
+	    if _trt01pn = 1 then do; trt01p = "Study Drug Dose 1"; trt01pn = 2; end;
+	    if _trt01an = 1 then do; trt01a = "Study Drug Dose 1"; trt01an = 2; end;
 	
-	    if trt01pn = 2 then do; trt01p = "Study Drug Dose 2"; trt01pn = 3; end;
-	    if trt01an = 2 then do; trt01a = "Study Drug Dose 2"; trt01an = 3; end;
+	    if _trt01pn = 2 then do; trt01p = "Study Drug Dose 2"; trt01pn = 3; end;
+	    if _trt01an = 2 then do; trt01a = "Study Drug Dose 2"; trt01an = 3; end;
     end;
 
 	  **Pooled Treatments;
