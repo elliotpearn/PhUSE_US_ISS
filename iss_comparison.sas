@@ -313,6 +313,7 @@ libname &&lib&k.. &&complib&k..;
 %end;
 %mend;
 %test;
+
 %macro assign_trt(lib=);
 data adsl_&lib.;
     set &lib..adsl (drop=trt01p trt01pn trt01a trt01an);
@@ -415,7 +416,7 @@ libname comp "&complib_data.adamdata/&lib./";
  %if %upcase(&inds.) ne ADSL %then %do;
   %if %sysfunc(exist(&lib..&inds.)) %then %do;
    data comp.&inds.;
-    merge &inds._pre (drop=trt0: in=inDS) adsl_&lib. (keep=studyid usubjid trt0: tr0:);
+    merge &inds._pre (drop=trt0: trtp trtpn trta trtan  in=inDS) adsl_&lib. (keep=studyid usubjid trt0: tr0:);
     by studyid usubjid;
 
     if inDS;
@@ -455,7 +456,9 @@ data renam_format;
 
     drop dataset;
 run;
-
+%let inds = ADSL;
+%let lib=STUDY3;
+%let dsin = ADSL;
 %let nam = %str(&lib._&inds._cont);
 
 data ds_in;
