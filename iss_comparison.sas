@@ -313,7 +313,7 @@ libname &&lib&k.. &&complib&k..;
 %end;
 %mend;
 %test;
-
+/*
 %macro assign_trt(lib=);
 data adsl_&lib.;
     set &lib..adsl (drop=trt01p trt01pn trt01a trt01an);
@@ -456,9 +456,7 @@ data renam_format;
 
     drop dataset;
 run;
-%let inds = ADSL;
-%let lib=STUDY3;
-%let dsin = ADSL;
+
 %let nam = %str(&lib._&inds._cont);
 
 data ds_in;
@@ -695,9 +693,9 @@ run;
       title3 "to- ISS";
       proc compare base=comp.&in.
                    compare=compc.&in.
-                   listall                  /* List all vars and obs differences */
-                   maxprint=(50,2000);      /* limit diffs reported (per-var,total)*/
-      run;
+                   listall                  
+				   maxprint=(50,2000);
+	  run;
       %* accumulate the sysinfo (which is a binary value);
       %let compres = %sysfunc(bOR(&sysinfo, &compres.));
 
@@ -728,7 +726,7 @@ run;
 %end;
 
 %end;
-
+*/
 ******** DISPLAY COMPARISON SECTION *****************;
 %if &disp = Y %then %do;
 **** SAS 2 TERMINAL CODE  ****;
