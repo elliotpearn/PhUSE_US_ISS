@@ -315,8 +315,8 @@ libname &&lib&k.. &&complib&k..;
 %test;
 
 %macro assign_trt(lib=);
-data adsl_&lib.;
-    set &lib..adsl (drop=trt01p trt01pn trt01a trt01an);
+data adsl_&lib. (drop=_:);
+    set &lib..adsl rename=(trt01p=_trt01p trt01pn=_trt01pn trt01a=_trt01a trt01an=_trt01an)
 
       ****STUDY SPECIFIC CODE - THIS WILL NEED TO BE UPDATED;
       ***Reassign Treatment Variables to previous studies so they match ISS;
