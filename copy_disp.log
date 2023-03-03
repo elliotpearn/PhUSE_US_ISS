@@ -1,0 +1,71 @@
+1                                                          The SAS System                                15:36 Friday, March 3, 2023
+
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: One or more libraries specified in the concatenated library SASHELP 
+WARNING: do not exist.  These libraries were removed from the concatenation.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
+NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software V.04.00 (TS M0) 
+      Licensed to DOMINO DATA LAB INC - MICROSOFT AZURE, Site 70297955.
+NOTE: This session is executing on the Linux 5.4.209-116.363.amzn2.x86_64 (LIN X64) platform.
+
+
+
+NOTE: Additional host information:
+
+ Linux LIN X64 5.4.209-116.363.amzn2.x86_64 #1 SMP Wed Aug 10 21:19:18 UTC 2022 x86_64 Red Hat Enterprise Linux release 8.6 (Ootpa) 
+
+NOTE: SAS initialization used:
+      real time           0.01 seconds
+      cpu time            0.02 seconds
+      
+1          %let complib=%str(/mnt/code/ISS/test/);
+2          data copy;
+3            x echo Delete drivers from current folder to prevent overwriting
+3        !                                                                   ;
+4            x cd &complib.drivers/
+4        !                         ;
+5            x \rm t_*.sas
+5        !                ;
+6            x echo Copy drivers from prod into test area
+ERROR: '/mnt/code/ISS/test/drivers/&drivlib.drivers' : No such directory.
+6        !                                               ;
+7            x cd &drivlib.drivers
+WARNING: Apparent symbolic reference DRIVLIB not resolved.
+7        !                        ;
+8            x cp -p t_*.sas &complib.drivers/
+8        !                                    ;
+9            x echo Copy macros from prod into test area
+ERROR: '/mnt/code/ISS/test/drivers/&drivlib.code' : No such directory.
+9        !                                              ;
+10           x cd &drivlib.code
+WARNING: Apparent symbolic reference DRIVLIB not resolved.
+10       !                     ;
+11           x cp -p rd_*.sas &complib.code/
+11       !                                  ;
+12           x cp -p td_*.sas &complib.code/
+12       !                                  ;
+13           x cp -p tu_*.sas &complib.code/
+13       !                                  ;
+14           x cp -p ts_*.sas &complib.code/
+14       !                                  ;
+15         run;
+
+NOTE: The data set WORK.COPY has 1 observations and 0 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+2                                                          The SAS System                                15:36 Friday, March 3, 2023
+
+      
+
+ERROR: Errors printed on page 1.
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           0.05 seconds
+      cpu time            0.03 seconds
+      

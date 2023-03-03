@@ -126,7 +126,7 @@
 %let compfilt4=;
 %let compfilt5=;
 %let disp = N;
-%let drivlib = %str(/mnt/code/ISS/);
+%let drivlib = %str(/mnt/code/);
 */
 
 %if &datac= Y %then %do;
@@ -821,7 +821,7 @@ data test;
 x echo Starting Lib &lib.;
 %if &lib. ne &lib1. %then %do;
 x cd &drivlib.drivers;
-x cp -p t_*.sas /arenv/arwork/gsk4182136/mid215199/iss_01/test/drivers/;
+x cp -p t_*.sas &complib.drivers/;
 %end;
 x cd &complib.drivers/;
 %do i = 1 %to &file_count; ;
@@ -837,8 +837,8 @@ x echo Comp = &comp;
     x sed -i "s+/adamdata+/adamdata/\&lib+g" &complib.drivers/&&file&i.._&lib..sas;
     x sed -i "s/\.sas\>/_\&lib\.sas/g" &complib.drivers/&&file&i.._&lib..sas;
     x sed -i "s+/&&file&i..\>+/&&file&i.._&lib.+g"  &complib.drivers/&&file&i.._&lib..sas;
-    x cd &complib.saslogs/;
-    x sas ../drivers/&&file&i.._&lib..sas;
+    *x cd &complib.saslogs/;
+    *x sas ../drivers/&&file&i.._&lib..sas;
 %end;
 %mend;
 
@@ -850,6 +850,7 @@ x echo Comp = &comp;
 
 
 run;
+/*
 %macro compare_displays(ddlib=);
 
 data files;
@@ -942,7 +943,7 @@ libname dddatac &ddlib.;
 %mend compare_displays;
 
 %compare_displays(ddlib="&complib.dddata");
-
+*/
 
 %end;
 
@@ -970,8 +971,9 @@ compfilt2=,
 compfilt3=,
 compfilt4=,
 compfilt5=,
-disp = N,
-drivlib = %str(/mnt/code/ISS/));
+disp = Y,
+datac=Y,
+drivlib = %str(/mnt/code/));
 
 
 

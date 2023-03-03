@@ -126,7 +126,7 @@
 %let compfilt4=;
 %let compfilt5=;
 %let disp = N;
-%let drivlib = %str(/mnt/code/ISS/);
+%let drivlib = %str(/mnt/code/);
 */
 
 %if &datac= Y %then %do;
@@ -317,33 +317,46 @@ libname &&lib&k.. &&complib&k..;
 %macro assign_trt(lib=);
 data adsl_&lib. (drop=_:);
     set &lib..adsl (rename=(trt01p=_trt01p trt01pn=_trt01pn trt01a=_trt01a trt01an=_trt01an));
-
+	label trt01p = "Planned Treatment for Period 01"
+		  trt01pn = "Planned Treatment for Period 01 (N)"
+		  trt01a = "Actual Treatment for Period 01"
+		  trt01an = "Actual Treatment for Period 01 (N)"
+		  tr01pg1 = "Planned Pooled Treatment 1 for Period 01"
+		  tr01pg1n = "Planned Pooled Trt 1 for Period 01 (N)"
+		  tr01ag1 = "Actual Pooled Treatment 1 for Period 01"
+		  tr01ag1n = "Actual Pooled Trt 1 for Period 01 (N)"
+		  tr01pg2 = "Planned Pooled Treatment 2 for Period 01"
+		  tr01pg2n = "Planned Pooled Trt 2 for Period 01 (N)"
+		  tr01ag2 = "Actual Pooled Treatment 2 for Period 01"
+		  tr01ag2n = "Actual Pooled Trt 2 for Period 01 (N)";
       ****STUDY SPECIFIC CODE - THIS WILL NEED TO BE UPDATED;
       ***Reassign Treatment Variables to previous studies so they match ISS;
       length trt01p trt01a $26 tr01pg1 tr01ag1 $10 tr01pg2 tr01ag2 $21;
 
-      **Planned Treatments; 
+   **Planned Treatments; 
     if STUDYID = "STUDY1" then do;
-	    if trt01pn = 2 then trt01p = "Study Drug Dose 1";
-	    if trt01an = 2 then trt01a = "Study Drug Dose 1";	
+	    if _trt01pn = 2 then do; trt01p = "Study Drug Dose 1"; trt01pn = 2; end; 
+		else do; trt01p = "Placebo"; trt01pn = 1; end;
+	    if _trt01an = 2 then do; trt01a = "Study Drug Dose 1";	trt01an = 2; end;
+		else do; trt01a = "Placebo"; trt01an = 1; end;
     end;
     if STUDYID = "STUDY2" then do;
-		if trt01pn = 3 then do; trt01p = "Study Drug Dose 4"; trt01pn = 5; end;
-	    if trt01an = 3 then do; trt01a = "Study Drug Dose 4"; trt01pn = 5; end;
+		if _trt01pn = 3 then do; trt01p = "Study Drug Dose 4"; trt01pn = 5; end;
+	    if _trt01an = 3 then do; trt01a = "Study Drug Dose 4"; trt01an = 5; end;
 
-    	if trt01pn = 2 then do; trt01p = "Study Drug Dose 3"; trt01pn = 4; end;
-	    if trt01an = 2 then do; trt01a = "Study Drug Dose 3"; trt01an = 4; end;
+    	if _trt01pn = 2 then do; trt01p = "Study Drug Dose 3"; trt01pn = 4; end;
+	    if _trt01an = 2 then do; trt01a = "Study Drug Dose 3"; trt01an = 4; end;
 	
-	    if trt01pn = 1 then do; trt01p = "Study Drug Dose 2"; trt01pn = 3; end;
-	    if trt01an = 1 then do; trt01a = "Study Drug Dose 2"; trt01an = 3; end;
+	    if _trt01pn = 1 then do; trt01p = "Study Drug Dose 2"; trt01pn = 3; end;
+	    if _trt01an = 1 then do; trt01a = "Study Drug Dose 2"; trt01an = 3; end;
     end;
 
     if STUDYID = "STUDY3" then do;
-	    if trt01pn = 1 then do; trt01p = "Study Drug Dose 1"; trt01pn = 2; end;
-	    if trt01an = 1 then do; trt01a = "Study Drug Dose 1"; trt01an = 2; end;
+	    if _trt01pn = 1 then do; trt01p = "Study Drug Dose 1"; trt01pn = 2; end;
+	    if _trt01an = 1 then do; trt01a = "Study Drug Dose 1"; trt01an = 2; end;
 	
-	    if trt01pn = 2 then do; trt01p = "Study Drug Dose 2"; trt01pn = 3; end;
-	    if trt01an = 2 then do; trt01a = "Study Drug Dose 2"; trt01an = 3; end;
+	    if _trt01pn = 2 then do; trt01p = "Study Drug Dose 2"; trt01pn = 3; end;
+	    if _trt01an = 2 then do; trt01a = "Study Drug Dose 2"; trt01an = 3; end;
     end;
 
 	  **Pooled Treatments;
@@ -682,7 +695,17 @@ run;
             libname compc "&complib_data.adamdata/&lib.C";
             libname comp "&complib_data.adamdata/&lib.";
         %end;
+		%if &in = adae %then %do;
+		data sort_ds_&lib.;
+		set comp.ADAE;
+	    run;
+		proc sort data=sort_ds_&lib. out=comp.ADAE;
+			by usubjid studyid aeseq astdt aendt;
+	    run;
+		%end;
     %end;
+
+
 
  %* define a value to accumulate all the proc compare results into;
 %let compres=0;
@@ -692,6 +715,7 @@ run;
       title  "Compare of &in.";
       title2 "from- &lib";
       title3 "to- ISS";
+	
       proc compare base=comp.&in.
                    compare=compc.&in.
                    listall                  
@@ -797,7 +821,7 @@ data test;
 x echo Starting Lib &lib.;
 %if &lib. ne &lib1. %then %do;
 x cd &drivlib.drivers;
-x cp -p t_*.sas /arenv/arwork/gsk4182136/mid215199/iss_01/test/drivers/;
+x cp -p t_*.sas &complib.drivers/;
 %end;
 x cd &complib.drivers/;
 %do i = 1 %to &file_count; ;
@@ -813,8 +837,8 @@ x echo Comp = &comp;
     x sed -i "s+/adamdata+/adamdata/\&lib+g" &complib.drivers/&&file&i.._&lib..sas;
     x sed -i "s/\.sas\>/_\&lib\.sas/g" &complib.drivers/&&file&i.._&lib..sas;
     x sed -i "s+/&&file&i..\>+/&&file&i.._&lib.+g"  &complib.drivers/&&file&i.._&lib..sas;
-    x cd &complib.saslogs/;
-    x sas ../drivers/&&file&i.._&lib..sas;
+    *x cd &complib.saslogs/;
+    *x sas ../drivers/&&file&i.._&lib..sas;
 %end;
 %mend;
 
@@ -826,6 +850,7 @@ x echo Comp = &comp;
 
 
 run;
+/*
 %macro compare_displays(ddlib=);
 
 data files;
@@ -918,7 +943,7 @@ libname dddatac &ddlib.;
 %mend compare_displays;
 
 %compare_displays(ddlib="&complib.dddata");
-
+*/
 
 %end;
 
@@ -946,8 +971,9 @@ compfilt2=,
 compfilt3=,
 compfilt4=,
 compfilt5=,
-disp = N,
-drivlib = %str(/mnt/code/ISS/));
+disp = Y,
+datac=Y,
+drivlib = %str(/mnt/code/));
 
 
 

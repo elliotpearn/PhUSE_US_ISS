@@ -1,4 +1,4 @@
-1                                                          The SAS System                                13:36 Friday, March 3, 2023
+1                                                          The SAS System                                15:45 Friday, March 3, 2023
 
 NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
 NOTE: All registry changes will be lost at the end of the session.
@@ -20,7 +20,7 @@ NOTE: Additional host information:
 
 NOTE: SAS initialization used:
       real time           0.01 seconds
-      cpu time            0.02 seconds
+      cpu time            0.01 seconds
       
 1          /******************Header Template V2***************************************
 2          | Program Name: iss_comparison.sas
@@ -58,7 +58,7 @@ NOTE: SAS initialization used:
 34         |                         OLD_VAR - Name of variable in origin study
 35         |                         NEW_VAR - Name of variable in ISS study
 36         |
-2                                                          The SAS System                                13:36 Friday, March 3, 2023
+2                                                          The SAS System                                15:45 Friday, March 3, 2023
 
 37         |
 38         | COMPLOC               Specifies the desired location of the Compare PDFs               (None)
@@ -118,7 +118,7 @@ NOTE: SAS initialization used:
 92                 compfilt4=,
 93                 compfilt5=,
 94                 compfilt6=,
-3                                                          The SAS System                                13:36 Friday, March 3, 2023
+3                                                          The SAS System                                15:45 Friday, March 3, 2023
 
 95                 csv =,
 96                 comploc =,
@@ -154,7 +154,7 @@ NOTE: SAS initialization used:
 126        %let compfilt4=;
 127        %let compfilt5=;
 128        %let disp = N;
-129        %let drivlib = %str(/mnt/code/ISS/);
+129        %let drivlib = %str(/mnt/code/);
 130        */
 131        
 132        %if &datac= Y %then %do;
@@ -178,7 +178,7 @@ NOTE: SAS initialization used:
 150          call symput("pkdata","&createlib./pkdata/");
 151          call symput("rawdata","&createlib./rawdata/");
 152          call symput("refdata","&createlib./refdata/");
-4                                                          The SAS System                                13:36 Friday, March 3, 2023
+4                                                          The SAS System                                15:45 Friday, March 3, 2023
 
 153          call symput("logs","&createlib./saslogs/");
 154          call symput("sdtm","&createlib./sdtm/");
@@ -238,7 +238,7 @@ NOTE: SAS initialization used:
 209            %end;
 210          %let rc=%sysfunc(close(&dsid));
 211        %mend create;
-5                                                          The SAS System                                13:36 Friday, March 3, 2023
+5                                                          The SAS System                                15:45 Friday, March 3, 2023
 
 213        %global lib_list;
 214        %let lib_list = %create;
@@ -298,7 +298,7 @@ NOTE: SAS initialization used:
 268             run;
 269        
 270            **Count datasets;
-6                                                          The SAS System                                13:36 Friday, March 3, 2023
+6                                                          The SAS System                                15:45 Friday, March 3, 2023
 
 271            %global ds_count;
 272             proc sql noprint;
@@ -349,659 +349,687 @@ NOTE: SAS initialization used:
 317        %macro assign_trt(lib=);
 318        data adsl_&lib. (drop=_:);
 319            set &lib..adsl (rename=(trt01p=_trt01p trt01pn=_trt01pn trt01a=_trt01a trt01an=_trt01an));
-320        
-321              ****STUDY SPECIFIC CODE - THIS WILL NEED TO BE UPDATED;
-322              ***Reassign Treatment Variables to previous studies so they match ISS;
-323              length trt01p trt01a $26 tr01pg1 tr01ag1 $10 tr01pg2 tr01ag2 $21;
-324        
-325              **Planned Treatments;
-326            if STUDYID = "STUDY1" then do;
-327        	    if trt01pn = 2 then trt01p = "Study Drug Dose 1";
-328        	    if trt01an = 2 then trt01a = "Study Drug Dose 1";	
-7                                                          The SAS System                                13:36 Friday, March 3, 2023
+320        	label trt01p = "Planned Treatment for Period 01"
+321        		  trt01pn = "Planned Treatment for Period 01 (N)"
+322        		  trt01a = "Actual Treatment for Period 01"
+323        		  trt01an = "Actual Treatment for Period 01 (N)"
+324        		  tr01pg1 = "Planned Pooled Treatment 1 for Period 01"
+325        		  tr01pg1n = "Planned Pooled Trt 1 for Period 01 (N)"
+326        		  tr01ag1 = "Actual Pooled Treatment 1 for Period 01"
+327        		  tr01ag1n = "Actual Pooled Trt 1 for Period 01 (N)"
+328        		  tr01pg2 = "Planned Pooled Treatment 2 for Period 01"
+7                                                          The SAS System                                15:45 Friday, March 3, 2023
 
-329            end;
-330            if STUDYID = "STUDY2" then do;
-331        		if trt01pn = 3 then do; trt01p = "Study Drug Dose 4"; trt01pn = 5; end;
-332        	    if trt01an = 3 then do; trt01a = "Study Drug Dose 4"; trt01pn = 5; end;
-333        
-334            	if trt01pn = 2 then do; trt01p = "Study Drug Dose 3"; trt01pn = 4; end;
-335        	    if trt01an = 2 then do; trt01a = "Study Drug Dose 3"; trt01an = 4; end;
-336        	
-337        	    if trt01pn = 1 then do; trt01p = "Study Drug Dose 2"; trt01pn = 3; end;
-338        	    if trt01an = 1 then do; trt01a = "Study Drug Dose 2"; trt01an = 3; end;
-339            end;
-340        
-341            if STUDYID = "STUDY3" then do;
-342        	    if trt01pn = 1 then do; trt01p = "Study Drug Dose 1"; trt01pn = 2; end;
-343        	    if trt01an = 1 then do; trt01a = "Study Drug Dose 1"; trt01an = 2; end;
-344        	
-345        	    if trt01pn = 2 then do; trt01p = "Study Drug Dose 2"; trt01pn = 3; end;
-346        	    if trt01an = 2 then do; trt01a = "Study Drug Dose 2"; trt01an = 3; end;
-347            end;
-348        
-349        	  **Pooled Treatments;
-350        		if trt01p= "Placebo" then do;
-351        			tr01pg1 = "Placebo";
-352        			tr01pg1n = 1;
-353        		end;
-354        	    else do;
-355        	        tr01pg1 = "Study Drug";
-356        			tr01pg1n = 2;
-357        	    end;
-358        
-359        		if trt01p= "Placebo" then do;
-360        			tr01pg2 = "Placebo";
-361        			tr01pg2n = 1;
-362        		end;
-363        	    if trt01pn in (2,3) then do;
-364        	        tr01pg2 = "Study Drug Dose 1 & 2";
-365        	        tr01pg2n = 2;
-366        	    end;
-367        	    else if trt01pn in (4,5) then do;
-368        	        tr01pg2 = "Study Drug Dose 3 & 4";
-369        	        tr01pg2n = 3;
+329        		  tr01pg2n = "Planned Pooled Trt 2 for Period 01 (N)"
+330        		  tr01ag2 = "Actual Pooled Treatment 2 for Period 01"
+331        		  tr01ag2n = "Actual Pooled Trt 2 for Period 01 (N)";
+332              ****STUDY SPECIFIC CODE - THIS WILL NEED TO BE UPDATED;
+333              ***Reassign Treatment Variables to previous studies so they match ISS;
+334              length trt01p trt01a $26 tr01pg1 tr01ag1 $10 tr01pg2 tr01ag2 $21;
+335        
+336           **Planned Treatments;
+337            if STUDYID = "STUDY1" then do;
+338        	    if _trt01pn = 2 then do; trt01p = "Study Drug Dose 1"; trt01pn = 2; end;
+339        		else do; trt01p = "Placebo"; trt01pn = 1; end;
+340        	    if _trt01an = 2 then do; trt01a = "Study Drug Dose 1";	trt01an = 2; end;
+341        		else do; trt01a = "Placebo"; trt01an = 1; end;
+342            end;
+343            if STUDYID = "STUDY2" then do;
+344        		if _trt01pn = 3 then do; trt01p = "Study Drug Dose 4"; trt01pn = 5; end;
+345        	    if _trt01an = 3 then do; trt01a = "Study Drug Dose 4"; trt01an = 5; end;
+346        
+347            	if _trt01pn = 2 then do; trt01p = "Study Drug Dose 3"; trt01pn = 4; end;
+348        	    if _trt01an = 2 then do; trt01a = "Study Drug Dose 3"; trt01an = 4; end;
+349        	
+350        	    if _trt01pn = 1 then do; trt01p = "Study Drug Dose 2"; trt01pn = 3; end;
+351        	    if _trt01an = 1 then do; trt01a = "Study Drug Dose 2"; trt01an = 3; end;
+352            end;
+353        
+354            if STUDYID = "STUDY3" then do;
+355        	    if _trt01pn = 1 then do; trt01p = "Study Drug Dose 1"; trt01pn = 2; end;
+356        	    if _trt01an = 1 then do; trt01a = "Study Drug Dose 1"; trt01an = 2; end;
+357        	
+358        	    if _trt01pn = 2 then do; trt01p = "Study Drug Dose 2"; trt01pn = 3; end;
+359        	    if _trt01an = 2 then do; trt01a = "Study Drug Dose 2"; trt01an = 3; end;
+360            end;
+361        
+362        	  **Pooled Treatments;
+363        		if trt01p= "Placebo" then do;
+364        			tr01pg1 = "Placebo";
+365        			tr01pg1n = 1;
+366        		end;
+367        	    else do;
+368        	        tr01pg1 = "Study Drug";
+369        			tr01pg1n = 2;
 370        	    end;
 371        
-372        		**Actual pooled;
-373        		if trt01a= "Placebo" then do;
-374        			tr01ag1 = "Placebo";
-375        			tr01ag1n = 1;
-376        		end;
-377        	    else do;
-378        	        tr01ag1 = "Study Drug";
-379        			tr01ag1n = 2;
-380        	    end;
-381        		if trt01a= "Placebo" then do;
-382        			tr01ag2 = "Placebo";
-383        			tr01ag2n = 1;
-384        		end;
-385        	    if trt01an in (2,3) then do;
-386        	        tr01ag2 = "Study Drug Dose 1 & 2";
-8                                                          The SAS System                                13:36 Friday, March 3, 2023
+372        		if trt01p= "Placebo" then do;
+373        			tr01pg2 = "Placebo";
+374        			tr01pg2n = 1;
+375        		end;
+376        	    if trt01pn in (2,3) then do;
+377        	        tr01pg2 = "Study Drug Dose 1 & 2";
+378        	        tr01pg2n = 2;
+379        	    end;
+380        	    else if trt01pn in (4,5) then do;
+381        	        tr01pg2 = "Study Drug Dose 3 & 4";
+382        	        tr01pg2n = 3;
+383        	    end;
+384        
+385        		**Actual pooled;
+386        		if trt01a= "Placebo" then do;
+8                                                          The SAS System                                15:45 Friday, March 3, 2023
 
-387        	        tr01ag2n = 2;
-388        	    end;
-389        	    else if trt01an in (4,5) then do;
-390        	        tr01ag2 = "Study Drug Dose 3 & 4";
-391        	        tr01ag2n = 3;
-392        	    end;
-393        
-394        run;
-395        
-396        **If NON-ADSL dataset is required for TLF comparison - then merge rederived treatments onto old dataset;
-397        **If ADSL then just rename dataset to be in correct format;
-398        libname comp "&complib_data.adamdata/&lib./";
-399        
-400        %do k = 1 %to &compn.;
-401           %if %sysfunc(exist(&lib..&inds.)) %then %do;
-402            %if &&lib&k.. = &lib. %then %do;
-403                data &inds._pre;
-404                    set &lib..&inds.;
-405        
-406                    %if &&compfilt&k.. ne %then %do;
-407                    &&compfilt&k..;
-408                    %end;
-409                run;
-410            %end;
-411           %end;
-412        %end;
-413        
-414        %let null = 0;
-415        
-416         %if %upcase(&inds.) ne ADSL %then %do;
-417          %if %sysfunc(exist(&lib..&inds.)) %then %do;
-418           data comp.&inds.;
-419            merge &inds._pre (drop=trt0: trtp trtpn trta trtan  in=inDS) adsl_&lib. (keep=studyid usubjid trt0: tr0:);
-420            by studyid usubjid;
-421        
-422            if inDS;
-423        
-424           run;
-425          %end;
+387        			tr01ag1 = "Placebo";
+388        			tr01ag1n = 1;
+389        		end;
+390        	    else do;
+391        	        tr01ag1 = "Study Drug";
+392        			tr01ag1n = 2;
+393        	    end;
+394        		if trt01a= "Placebo" then do;
+395        			tr01ag2 = "Placebo";
+396        			tr01ag2n = 1;
+397        		end;
+398        	    if trt01an in (2,3) then do;
+399        	        tr01ag2 = "Study Drug Dose 1 & 2";
+400        	        tr01ag2n = 2;
+401        	    end;
+402        	    else if trt01an in (4,5) then do;
+403        	        tr01ag2 = "Study Drug Dose 3 & 4";
+404        	        tr01ag2n = 3;
+405        	    end;
+406        
+407        run;
+408        
+409        **If NON-ADSL dataset is required for TLF comparison - then merge rederived treatments onto old dataset;
+410        **If ADSL then just rename dataset to be in correct format;
+411        libname comp "&complib_data.adamdata/&lib./";
+412        
+413        %do k = 1 %to &compn.;
+414           %if %sysfunc(exist(&lib..&inds.)) %then %do;
+415            %if &&lib&k.. = &lib. %then %do;
+416                data &inds._pre;
+417                    set &lib..&inds.;
+418        
+419                    %if &&compfilt&k.. ne %then %do;
+420                    &&compfilt&k..;
+421                    %end;
+422                run;
+423            %end;
+424           %end;
+425        %end;
 426        
-427          %else %do;
-428            %let null = 1;
-429        
-430            data comp.&inds.;
-431                null = 1;
-432            run;
-433        
-434          %end;
-435         %end;
-436         %else %do;
-437           data comp.&inds.;
-438             set adsl_&lib.;
+427        %let null = 0;
+428        
+429         %if %upcase(&inds.) ne ADSL %then %do;
+430          %if %sysfunc(exist(&lib..&inds.)) %then %do;
+431           data comp.&inds.;
+432            merge &inds._pre (drop=trt0: trtp trtpn trta trtan  in=inDS) adsl_&lib. (keep=studyid usubjid trt0: tr0:);
+433            by studyid usubjid;
+434        
+435            if inDS;
+436        
+437           run;
+438          %end;
 439        
-440           run;
-441         %end;
+440          %else %do;
+441            %let null = 1;
 442        
-443        **Import CSV file for renaming variables - all variables that are in both studies just with diff names;
-444        %if &null. ne 1 %then %do;
-9                                                          The SAS System                                13:36 Friday, March 3, 2023
+443            data comp.&inds.;
+444                null = 1;
+9                                                          The SAS System                                15:45 Friday, March 3, 2023
 
-445        
-446        proc import datafile="&csv."
-447        		out=renam dbms=csv replace;
-448        	getnames=YES;
-449        	guessingrows=max;
-450        run;
-451        
-452        **Format memname to be the same as current datasets;
-453        data renam_format;
-454            set renam;
-455            length memname $32;
-456            memname = strip(dataset);
-457        
-458            drop dataset;
-459        run;
-460        
-461        %let nam = %str(&lib._&inds._cont);
-462        
-463        data ds_in;
-464            set %put &nam;;
-465        run;
-466        
-467        **Proc Contents to get attributes for variables;
-468        proc contents data=comp.&inds. out=ds_in noprint;
-469        title 'before renaming';
-470        run;
-471        
-472        **Set all attribute dataset together;
-473        data cont_all;
-474            set ds_in;
+445            run;
+446        
+447          %end;
+448         %end;
+449         %else %do;
+450           data comp.&inds.;
+451             set adsl_&lib.;
+452        
+453           run;
+454         %end;
+455        
+456        **Import CSV file for renaming variables - all variables that are in both studies just with diff names;
+457        %if &null. ne 1 %then %do;
+458        
+459        proc import datafile="&csv."
+460        		out=renam dbms=csv replace;
+461        	getnames=YES;
+462        	guessingrows=max;
+463        run;
+464        
+465        **Format memname to be the same as current datasets;
+466        data renam_format;
+467            set renam;
+468            length memname $32;
+469            memname = strip(dataset);
+470        
+471            drop dataset;
+472        run;
+473        
+474        %let nam = %str(&lib._&inds._cont);
 475        
-476            lib="&lib.";
-477        run;
-478        **Merge attributes with renaming dataset and only keep variables that are in both;
-479        **Create a macro variable of the list of dataset that will need a variable renamed;
-480        proc sql noprint;
-481            create table rename_identify as
-482            select a.memname, a.name, b.new_var, b.study
-483            from cont_all (where=(lib="&lib.")) as a, renam_format (where=(study="&lib.")) as b
-484            where a.memname = b.memname and a.name=b.old_var;
-485        
-486            select distinct(memname) into: ds_list
-487            separated by " "
-488            from rename_identify;
-489        quit;
-490        
-491        **Create order variable;
-492        proc sort data=rename_identify;
-493            by memname name;
-494        run;
-495        
-496        data rename_identify;
-497            set rename_identify;
-498            by memname name;
-499        
-500            retain varnum 0;
-501            if first.memname then varnum=1;
-502            else varnum=varnum+1;
-10                                                         The SAS System                                13:36 Friday, March 3, 2023
+476        data ds_in;
+477            set %put &nam;;
+478        run;
+479        
+480        **Proc Contents to get attributes for variables;
+481        proc contents data=comp.&inds. out=ds_in noprint;
+482        title 'before renaming';
+483        run;
+484        
+485        **Set all attribute dataset together;
+486        data cont_all;
+487            set ds_in;
+488        
+489            lib="&lib.";
+490        run;
+491        **Merge attributes with renaming dataset and only keep variables that are in both;
+492        **Create a macro variable of the list of dataset that will need a variable renamed;
+493        proc sql noprint;
+494            create table rename_identify as
+495            select a.memname, a.name, b.new_var, b.study
+496            from cont_all (where=(lib="&lib.")) as a, renam_format (where=(study="&lib.")) as b
+497            where a.memname = b.memname and a.name=b.old_var;
+498        
+499            select distinct(memname) into: ds_list
+500            separated by " "
+501            from rename_identify;
+502        quit;
+10                                                         The SAS System                                15:45 Friday, March 3, 2023
 
-503        run;
-504        
-505        %end;
-506        
-507        %if %symexist(ds_list) %then %do;
+503        
+504        **Create order variable;
+505        proc sort data=rename_identify;
+506            by memname name;
+507        run;
 508        
-509        %macro renam(dsin=);
-510        
-511            **Read in required dataset and find number of vars required;
-512            data rename_num;
-513                set rename_identify (where=(memname="&dsin" and study="&lib."));
-514                by memname varnum;
-515        
-516                if first.memname then call symput("start",strip(put(varnum,best.)));
-517                if last.memname then call symput("end",strip(put(varnum,best.)));
-518            run;
+509        data rename_identify;
+510            set rename_identify;
+511            by memname name;
+512        
+513            retain varnum 0;
+514            if first.memname then varnum=1;
+515            else varnum=varnum+1;
+516        run;
+517        
+518        %end;
 519        
-520            **Count number of obs and only run renaming code if needed;
-521            proc sql noprint;
-522               select count(*) into: nobs
-523               from rename_num;
-524            quit;
-525        
-526            %if &nobs ne 0 %then %do;
-527        
-528            **Create a list the old variables and the new variables into a macro variable;
-529            proc sql noprint;
-530                select distinct(name) into: old_list
-531                separated by " "
-532                from rename_identify (where=(memname="&dsin"));
-533                select distinct(name) into: old_sql
-534                separated by ","
-535                from rename_identify (where=(memname="&dsin"));
-536                select distinct(new_var) into: new_list
-537                separated by " "
-538                from rename_identify (where=(memname="&dsin"));
-539            quit;
+520        %if %symexist(ds_list) %then %do;
+521        
+522        %macro renam(dsin=);
+523        
+524            **Read in required dataset and find number of vars required;
+525            data rename_num;
+526                set rename_identify (where=(memname="&dsin" and study="&lib."));
+527                by memname varnum;
+528        
+529                if first.memname then call symput("start",strip(put(varnum,best.)));
+530                if last.memname then call symput("end",strip(put(varnum,best.)));
+531            run;
+532        
+533            **Count number of obs and only run renaming code if needed;
+534            proc sql noprint;
+535               select count(*) into: nobs
+536               from rename_num;
+537            quit;
+538        
+539            %if &nobs ne 0 %then %do;
 540        
-541            **Pull out the new variables and transpose so there is 1 record and all variables;
-542            proc transpose data=rename_identify (where=(memname="&dsin")) out=new_var_t (keep=&new_list);
-543                by memname;
-544                id new_var;
-545            run;
-546        
-547            data sortedby;
-548                set sashelp.vcolumn;
-549                where libname="ADAMDATA" and memname=upcase("&inds") and sortedby ne 0;
-550            run;
-551        
-552            proc sql noprint;
-553                select distinct(name) into: sorted_list
-554                separated by " "
-555                from sortedby;
-556                 select distinct(name) into: sorted_sql
-557                separated by ","
-558                from sortedby;
-559            quit;
-560        
-11                                                         The SAS System                                13:36 Friday, March 3, 2023
+541            **Create a list the old variables and the new variables into a macro variable;
+542            proc sql noprint;
+543                select distinct(name) into: old_list
+544                separated by " "
+545                from rename_identify (where=(memname="&dsin"));
+546                select distinct(name) into: old_sql
+547                separated by ","
+548                from rename_identify (where=(memname="&dsin"));
+549                select distinct(new_var) into: new_list
+550                separated by " "
+551                from rename_identify (where=(memname="&dsin"));
+552            quit;
+553        
+554            **Pull out the new variables and transpose so there is 1 record and all variables;
+555            proc transpose data=rename_identify (where=(memname="&dsin")) out=new_var_t (keep=&new_list);
+556                by memname;
+557                id new_var;
+558            run;
+559        
+560            data sortedby;
+11                                                         The SAS System                                15:45 Friday, March 3, 2023
 
-561            **Create a temporary dataset containing old variables and merge variables;
-562            proc sql noprint;
-563                create table temp as
-564                select &old_sql, &sorted_sql
-565                from comp.&dsin;
-566            quit;
-567        
-568            **Create a second temporary dataset containing all variables but the old variables;
-569            proc sort data=comp.&dsin. out=temp2 (drop=&old_list);
-570                by &sorted_list;
-571            run;
-572        
-573            %LET ds=%SYSFUNC(OPEN(temp,i));
-574            %LET renam=%SYSFUNC(OPEN(new_var_t,i));
-575        
-576            **Renaming the variable process;
-577            %do i=&start %to &end;
-578                %let newnam&i=%SYSFUNC(VARNAME(&renam,&i));
-579                %let dsvn&i=%SYSFUNC(VARNAME(&ds,&i));
-580                %if %index(&sorted_list,%upcase(&&dsvn&i)) eq 0 %then %do;
-581                    %let vn&i=&&newnam&i;
-582        
-583                **Use VCOLUMN dataset to get attributes so that we can set lengths/label varibles;
-584                data var_props;
-585                    set sashelp.vcolumn;
-586                    where libname="COMP" and memname="&dsin." and name="&&dsvn&i.";
-587                    if type ne "" then call symputx("type&i",type,"G");
+561                set sashelp.vcolumn;
+562                where libname="ADAMDATA" and memname=upcase("&inds") and sortedby ne 0;
+563            run;
+564        
+565            proc sql noprint;
+566                select distinct(name) into: sorted_list
+567                separated by " "
+568                from sortedby;
+569                 select distinct(name) into: sorted_sql
+570                separated by ","
+571                from sortedby;
+572            quit;
+573        
+574            **Create a temporary dataset containing old variables and merge variables;
+575            proc sql noprint;
+576                create table temp as
+577                select &old_sql, &sorted_sql
+578                from comp.&dsin;
+579            quit;
+580        
+581            **Create a second temporary dataset containing all variables but the old variables;
+582            proc sort data=comp.&dsin. out=temp2 (drop=&old_list);
+583                by &sorted_list;
+584            run;
+585        
+586            %LET ds=%SYSFUNC(OPEN(temp,i));
+587            %LET renam=%SYSFUNC(OPEN(new_var_t,i));
 588        
-589                run;
-590        
-591                data var_props2;
-592                    set sashelp.vcolumn;
-593                    where libname="ADAMDATA" and memname=upcase("&inds") and name=upcase("&&newnam&i.");
-594                    if label ne "" then call symputx("lab&i",label);
-595                    if type = "char" then if length ne . then call symputx("len&i",length);
-596               run;
-597        
-598               %end;
-599            %end;
-600        
-601            **Finalising renaming process;
-602            data temp_renam;
-603            set temp;
-604        
-605            %do i=&start %to &end;
-606            %if %index(&sorted_list,%upcase(&&dsvn&i)) eq 0 %then %do;
-607            %if &&type&i eq char %then %do;
-608            length &&vn&i $&&len&i;
-609            %end;
-610            &&vn&i=&&dsvn&i;
-611            label &&vn&i = "&&lab&i.";
-612            drop &&dsvn&i.;
-613            %end;
-614            %end;
-615            %let rc=%SYSFUNC(CLOSE(&ds));
-616            %let rc=%SYSFUNC(CLOSE(&renam));
-617            run;
-618        
-12                                                         The SAS System                                13:36 Friday, March 3, 2023
+589            **Renaming the variable process;
+590            %do i=&start %to &end;
+591                %let newnam&i=%SYSFUNC(VARNAME(&renam,&i));
+592                %let dsvn&i=%SYSFUNC(VARNAME(&ds,&i));
+593                %if %index(&sorted_list,%upcase(&&dsvn&i)) eq 0 %then %do;
+594                    %let vn&i=&&newnam&i;
+595        
+596                **Use VCOLUMN dataset to get attributes so that we can set lengths/label varibles;
+597                data var_props;
+598                    set sashelp.vcolumn;
+599                    where libname="COMP" and memname="&dsin." and name="&&dsvn&i.";
+600                    if type ne "" then call symputx("type&i",type,"G");
+601        
+602                run;
+603        
+604                data var_props2;
+605                    set sashelp.vcolumn;
+606                    where libname="ADAMDATA" and memname=upcase("&inds") and name=upcase("&&newnam&i.");
+607                    if label ne "" then call symputx("lab&i",label);
+608                    if type = "char" then if length ne . then call symputx("len&i",length);
+609               run;
+610        
+611               %end;
+612            %end;
+613        
+614            **Finalising renaming process;
+615            data temp_renam;
+616            set temp;
+617        
+618            %do i=&start %to &end;
+12                                                         The SAS System                                15:45 Friday, March 3, 2023
 
-619            proc sort data=temp_renam;
-620                by &sorted_list;
-621            run;
-622        
-623            **Merge data back together with new variables;
-624            data comp.&dsin;
-625                merge temp2 (drop=&new_list) temp_renam ;
-626                by &sorted_list;
-627            run;
-628        
-629            %end;
-630        
-631        %mend renam;
-632        
-633        **Take list of datasets required and loop renaming macro through;
-634        %local k next_ds;
-635        %let k=1;
-636        %do %while (%scan(&ds_list, &k) ne );
-637           %let next_ds = %scan(&ds_list, &k);
-638           %renam(dsin=&next_ds);
-639           %let k = %eval(&k + 1);
-640        %end;
-641        %end;
-642        
-643        %mend assign_trt;
-644        **Specify list of libraries and run macro through them;
-645        %local q next_lib;
-646        %let q=1;
-647        %do %while (%scan(&lib_list, &q) ne );
-648           %let next_lib = %scan(&lib_list, &q);
-649           %assign_trt(lib=&next_lib);
-650           %let q = %eval(&q + 1);
-651        %end;
-652        
-653        %mend ds_comp_ready;
-654        %macro comp_ready;
-655        %do g = 1 %to &ds_count.;
-656           %ds_comp_ready(inds=&&ds&g..);
-657        %end;
-658        %mend comp_ready;
-659        %comp_ready;
-660        
-661        ***Now run macro to compare datasets;
-662        %macro compare_dd (in=,comp=);
-663        
-664           %*- SET SYSTEM OPTIONS LOCALLY FOR THIS MACRO;
-665           %* we are going to create a lot of output (e.g. proc compare) so set pagesize to max ;
-666           %* first, save the current options so that we can restore at end of macro ;
-667           %let original_PS = %sysfunc(getoption(PS));
-668           %let original_ORIENTATION = %sysfunc(getoption(orientation));
-669           options ps=max orientation=landscape;
-670        
-671           %* Setup ODS output for PDF file with name using macro parameter (filein) ;
-672           %* with system date attached e.g. /path/to/file/name_27JUL21.pdf          ;
-673           %* where filein=/path/to/file/name                                        ;
-674           ods listing close;
-675           ods noresults;
-676           ods pdf file="/mnt/code/Compares/&in._Data_Compare.pdf";
-13                                                         The SAS System                                13:36 Friday, March 3, 2023
+619            %if %index(&sorted_list,%upcase(&&dsvn&i)) eq 0 %then %do;
+620            %if &&type&i eq char %then %do;
+621            length &&vn&i $&&len&i;
+622            %end;
+623            &&vn&i=&&dsvn&i;
+624            label &&vn&i = "&&lab&i.";
+625            drop &&dsvn&i.;
+626            %end;
+627            %end;
+628            %let rc=%SYSFUNC(CLOSE(&ds));
+629            %let rc=%SYSFUNC(CLOSE(&renam));
+630            run;
+631        
+632            proc sort data=temp_renam;
+633                by &sorted_list;
+634            run;
+635        
+636            **Merge data back together with new variables;
+637            data comp.&dsin;
+638                merge temp2 (drop=&new_list) temp_renam ;
+639                by &sorted_list;
+640            run;
+641        
+642            %end;
+643        
+644        %mend renam;
+645        
+646        **Take list of datasets required and loop renaming macro through;
+647        %local k next_ds;
+648        %let k=1;
+649        %do %while (%scan(&ds_list, &k) ne );
+650           %let next_ds = %scan(&ds_list, &k);
+651           %renam(dsin=&next_ds);
+652           %let k = %eval(&k + 1);
+653        %end;
+654        %end;
+655        
+656        %mend assign_trt;
+657        **Specify list of libraries and run macro through them;
+658        %local q next_lib;
+659        %let q=1;
+660        %do %while (%scan(&lib_list, &q) ne );
+661           %let next_lib = %scan(&lib_list, &q);
+662           %assign_trt(lib=&next_lib);
+663           %let q = %eval(&q + 1);
+664        %end;
+665        
+666        %mend ds_comp_ready;
+667        %macro comp_ready;
+668        %do g = 1 %to &ds_count.;
+669           %ds_comp_ready(inds=&&ds&g..);
+670        %end;
+671        %mend comp_ready;
+672        %comp_ready;
+673        
+674        ***Now run macro to compare datasets;
+675        %macro compare_dd (in=,comp=);
+676        
+13                                                         The SAS System                                15:45 Friday, March 3, 2023
 
-677        
-678           %macro comp_loop(lib=);
-679        
-680            %do t = 1 %to &compn;
-681                %if &in.=&ds1. %then %do;
-682                    libname compc "&complib_data.adamdata/&lib.C";
-683                    libname comp "&complib_data.adamdata/&lib.";
-684                %end;
-685            %end;
-686        
-687         %* define a value to accumulate all the proc compare results into;
-688        %let compres=0;
-689        
-690           %* Loop through every dataset in the original/old library and proc compare ;
-691           %* with the dataset of same name in the new library.                       ;
-692              title  "Compare of &in.";
-693              title2 "from- &lib";
-694              title3 "to- ISS";
-695              proc compare base=comp.&in.
-696                           compare=compc.&in.
-697                           listall
-698        				   maxprint=(50,2000);
-699        	  run;
-700              %* accumulate the sysinfo (which is a binary value);
-701              %let compres = %sysfunc(bOR(&sysinfo, &compres.));
-702        
-703           %* once completed all proc compare, output result to log;
-704           %put %str(IN)FO: PROC COMPARE result for all datasets is [&compres.];
-705        
-706           %mend comp_loop;
+677           %*- SET SYSTEM OPTIONS LOCALLY FOR THIS MACRO;
+678           %* we are going to create a lot of output (e.g. proc compare) so set pagesize to max ;
+679           %* first, save the current options so that we can restore at end of macro ;
+680           %let original_PS = %sysfunc(getoption(PS));
+681           %let original_ORIENTATION = %sysfunc(getoption(orientation));
+682           options ps=max orientation=landscape;
+683        
+684           %* Setup ODS output for PDF file with name using macro parameter (filein) ;
+685           %* with system date attached e.g. /path/to/file/name_27JUL21.pdf          ;
+686           %* where filein=/path/to/file/name                                        ;
+687           ods listing close;
+688           ods noresults;
+689           ods pdf file="/mnt/code/Compares/&in._Data_Compare.pdf";
+690        
+691           %macro comp_loop(lib=);
+692        
+693            %do t = 1 %to &compn;
+694                %if &in.=&ds1. %then %do;
+695                    libname compc "&complib_data.adamdata/&lib.C";
+696                    libname comp "&complib_data.adamdata/&lib.";
+697                %end;
+698        		%if &in = adae %then %do;
+699        		data sort_ds_&lib.;
+700        		set comp.ADAE;
+701        	    run;
+702        		proc sort data=sort_ds_&lib. out=comp.ADAE;
+703        			by usubjid studyid aeseq astdt aendt;
+704        	    run;
+705        		%end;
+706            %end;
 707        
-708        **Specify list of libraries and run macro through them;
-709            %local s next_lib;
-710            %let s=1;
-711            %do %while (%scan(&lib_list, &s) ne );
-712               %let next_lib = %scan(&lib_list, &s);
-713               %comp_loop(lib=&next_lib);
-714               %let s = %eval(&s + 1);
-715            %end;
-716          ods pdf close;
-717        
-718           %* TIDY UP;
-719        
-720           %* restore the original PS (pagesize) option ;
-721           options PS=&original_PS orientation=&original_ORIENTATION;
-722        
-723        %mend compare_dd;
-724        
-725        %do p = 1 %to &ds_count.;
-726           %compare_dd(in=&&ds&p..);
-727        %end;
-728        
-729        %end;
-730        
-731        ******** DISPLAY COMPARISON SECTION *****************;
-732        %if &disp = Y %then %do;
-733        **** SAS 2 TERMINAL CODE  ****;
-734        data copy;
-14                                                         The SAS System                                13:36 Friday, March 3, 2023
+708        
+709        
+710         %* define a value to accumulate all the proc compare results into;
+711        %let compres=0;
+712        
+713           %* Loop through every dataset in the original/old library and proc compare ;
+714           %* with the dataset of same name in the new library.                       ;
+715              title  "Compare of &in.";
+716              title2 "from- &lib";
+717              title3 "to- ISS";
+718        	
+719              proc compare base=comp.&in.
+720                           compare=compc.&in.
+721                           listall
+722        				   maxprint=(50,2000);
+723        	  run;
+724              %* accumulate the sysinfo (which is a binary value);
+725              %let compres = %sysfunc(bOR(&sysinfo, &compres.));
+726        
+727           %* once completed all proc compare, output result to log;
+728           %put %str(IN)FO: PROC COMPARE result for all datasets is [&compres.];
+729        
+730           %mend comp_loop;
+731        
+732        **Specify list of libraries and run macro through them;
+733            %local s next_lib;
+734            %let s=1;
+14                                                         The SAS System                                15:45 Friday, March 3, 2023
 
-735          x echo Delete drivers from current folder to prevent overwriting;
-736          x cd &complib.drivers/;
-737          x \rm t_*.sas;
-738          x echo Copy drivers from prod into test area;
-739          x cd &drivlib.drivers;
-740          x cp -p t_*.sas &complib.drivers/;
-741          x echo Copy macros from prod into test area;
-742          x cd &drivlib.code;
-743          x cp -p rd_*.sas &complib.code/;
-744          x cp -p td_*.sas &complib.code/;
-745          x cp -p tu_*.sas &complib.code/;
-746          x cp -p ts_*.sas &complib.code/;
-747        run;
+735            %do %while (%scan(&lib_list, &s) ne );
+736               %let next_lib = %scan(&lib_list, &s);
+737               %comp_loop(lib=&next_lib);
+738               %let s = %eval(&s + 1);
+739            %end;
+740          ods pdf close;
+741        
+742           %* TIDY UP;
+743        
+744           %* restore the original PS (pagesize) option ;
+745           options PS=&original_PS orientation=&original_ORIENTATION;
+746        
+747        %mend compare_dd;
 748        
-749        data drivers;
-750         keep filename n;
-751         length fref $8 filename $80;
-752         rc = filename(fref, "&complib.drivers/");
-753         if rc = 0 then
-754         do;
-755         did = dopen(fref);
-756         rc = filename(fref);
-757         end;
-758         dnum = dnum(did);
-759         do c = 1 to dnum;
-760         filename = dread(did, c);
-761         n = c;
-762        
-763         fid = mopen(did, filename);
-764         if fid > 0
-765         then
-766         output;
-767         end;
-768         rc = dclose(did);
-769         run;
-770        
-771         data drivers;
-772            set drivers;
-773        
-774            filename=compress(tranwrd(filename,".sas",""));
-775         run;
-776        
-777         proc sql noprint;
-778            select count(*)
-779             into :file_count
-780             from drivers;
-781         quit;
-782        
-783         x echo File Count = &file_count;
-784        
-785        proc sql noprint;
-786            select filename into: file1 - :file%left(&file_count.)
-787            from drivers;
-788        quit;
-789        
-790        data test;
-791        
-792        %macro rename(lib=);
-15                                                         The SAS System                                13:36 Friday, March 3, 2023
+749        %do p = 1 %to &ds_count.;
+750           %compare_dd(in=&&ds&p..);
+751        %end;
+752        
+753        %end;
+754        
+755        ******** DISPLAY COMPARISON SECTION *****************;
+756        %if &disp = Y %then %do;
+757        **** SAS 2 TERMINAL CODE  ****;
+758        data copy;
+759          x echo Delete drivers from current folder to prevent overwriting;
+760          x cd &complib.drivers/;
+761          x \rm t_*.sas;
+762          x echo Copy drivers from prod into test area;
+763          x cd &drivlib.drivers;
+764          x cp -p t_*.sas &complib.drivers/;
+765          x echo Copy macros from prod into test area;
+766          x cd &drivlib.code;
+767          x cp -p rd_*.sas &complib.code/;
+768          x cp -p td_*.sas &complib.code/;
+769          x cp -p tu_*.sas &complib.code/;
+770          x cp -p ts_*.sas &complib.code/;
+771        run;
+772        
+773        data drivers;
+774         keep filename n;
+775         length fref $8 filename $80;
+776         rc = filename(fref, "&complib.drivers/");
+777         if rc = 0 then
+778         do;
+779         did = dopen(fref);
+780         rc = filename(fref);
+781         end;
+782         dnum = dnum(did);
+783         do c = 1 to dnum;
+784         filename = dread(did, c);
+785         n = c;
+786        
+787         fid = mopen(did, filename);
+788         if fid > 0
+789         then
+790         output;
+791         end;
+792         rc = dclose(did);
+15                                                         The SAS System                                15:45 Friday, March 3, 2023
 
-793        
-794        %let main = %sysfunc(scan(&mainlib.,-1));;
-795        %let comp = %sysfunc(scan(&complib.,-1));;
-796        
-797        x echo Starting Lib &lib.;
-798        %if &lib. ne &lib1. %then %do;
-799        x cd &drivlib.drivers;
-800        x cp -p t_*.sas /arenv/arwork/gsk4182136/mid215199/iss_01/test/drivers/;
-801        %end;
-802        x cd &complib.drivers/;
-803        %do i = 1 %to &file_count; ;
-804        x echo Rename file &&file&i;
-805        %if &i = 1 %then %do;
-806        x echo Main = &main;
-807        x echo Comp = &comp;
-808        %end;
-809        
-810            x cp -p &drivlib.drivers/&&file&i...sas &complib.drivers/&&file&i.._&lib..sas;
-811            x sed -i "s+&main/+&main/&comp/+" &complib.drivers/&&file&i.._&lib..sas;
-812            x sed -i 's+arprod/+arwork/+' &complib.drivers/&&file&i.._&lib..sas;
-813            x sed -i "s+/adamdata+/adamdata/\&lib+g" &complib.drivers/&&file&i.._&lib..sas;
-814            x sed -i "s/\.sas\>/_\&lib\.sas/g" &complib.drivers/&&file&i.._&lib..sas;
-815            x sed -i "s+/&&file&i..\>+/&&file&i.._&lib.+g"  &complib.drivers/&&file&i.._&lib..sas;
-816            x cd &complib.saslogs/;
-817            x sas ../drivers/&&file&i.._&lib..sas;
-818        %end;
-819        %mend;
+793         run;
+794        
+795         data drivers;
+796            set drivers;
+797        
+798            filename=compress(tranwrd(filename,".sas",""));
+799         run;
+800        
+801         proc sql noprint;
+802            select count(*)
+803             into :file_count
+804             from drivers;
+805         quit;
+806        
+807         x echo File Count = &file_count;
+808        
+809        proc sql noprint;
+810            select filename into: file1 - :file%left(&file_count.)
+811            from drivers;
+812        quit;
+813        
+814        data test;
+815        
+816        %macro rename(lib=);
+817        
+818        %let main = %sysfunc(scan(&mainlib.,-1));;
+819        %let comp = %sysfunc(scan(&complib.,-1));;
 820        
-821        %do d = 1 %to &compn.;
-822        %rename(lib=&&lib&d..);
-823        **ISS data filtered on specific study for comparison;
-824        %rename(lib=&&lib&d..C);
+821        x echo Starting Lib &lib.;
+822        %if &lib. ne &lib1. %then %do;
+823        x cd &drivlib.drivers;
+824        x cp -p t_*.sas &complib.drivers/;
 825        %end;
-826        
-827        
-828        run;
-829        %macro compare_displays(ddlib=);
-830        
-831        data files;
-832         keep filename n rc;
-833         length fref $8 filename $80;
-834         rc = filename(fref, "&drivlib.drivers/");
-835             if rc = 0 then
-836             do;
-837             did = dopen(fref);
-838             rc = filename(fref);
-839             end;
-840             dnum = dnum(did);
-841             do i = 1 to dnum;
-842             filename = dread(did, i);
-843             n = i;
+826        x cd &complib.drivers/;
+827        %do i = 1 %to &file_count; ;
+828        x echo Rename file &&file&i;
+829        %if &i = 1 %then %do;
+830        x echo Main = &main;
+831        x echo Comp = &comp;
+832        %end;
+833        
+834            x cp -p &drivlib.drivers/&&file&i...sas &complib.drivers/&&file&i.._&lib..sas;
+835            x sed -i "s+&main/+&main/&comp/+" &complib.drivers/&&file&i.._&lib..sas;
+836            x sed -i 's+arprod/+arwork/+' &complib.drivers/&&file&i.._&lib..sas;
+837            x sed -i "s+/adamdata+/adamdata/\&lib+g" &complib.drivers/&&file&i.._&lib..sas;
+838            x sed -i "s/\.sas\>/_\&lib\.sas/g" &complib.drivers/&&file&i.._&lib..sas;
+839            x sed -i "s+/&&file&i..\>+/&&file&i.._&lib.+g"  &complib.drivers/&&file&i.._&lib..sas;
+840            *x cd &complib.saslogs/;
+841            *x sas ../drivers/&&file&i.._&lib..sas;
+842        %end;
+843        %mend;
 844        
-845             fid = mopen(did, filename);
-846             if fid > 0
-847             then
-848             output;
-849             end;
-850             rc = dclose(did);
-16                                                         The SAS System                                13:36 Friday, March 3, 2023
+845        %do d = 1 %to &compn.;
+846        %rename(lib=&&lib&d..);
+847        **ISS data filtered on specific study for comparison;
+848        %rename(lib=&&lib&d..C);
+849        %end;
+850        
+16                                                         The SAS System                                15:45 Friday, March 3, 2023
 
-851         run;
-852        
-853         data files;
-854            set files (where=(index(filename,"t_")>0));
+851        
+852        run;
+853        /*
+854        %macro compare_displays(ddlib=);
 855        
-856            filename=compress(tranwrd(filename,".sas",""));
-857         run;
-858        
-859         proc sql noprint;
-860            select count(*)
-861             into :file_count
-862             from files;
-863         quit;
-864        
-865         %put &file_count;
-866        
-867        proc sql noprint;
-868            select filename into: file1 - :file%left(&file_count.)
-869            from files;
-870        quit;
-871        
-872        
-873        libname dddatac &ddlib.;
-874        
-875         %*- SET SYSTEM OPTIONS LOCALLY FOR THIS MACRO;
-876           %* we are going to create a lot of output (e.g. proc compare) so set pagesize to max ;
-877           %* first, save the current options so that we can restore at end of macro ;
-878           %let original_PS = %sysfunc(getoption(PS));
-879           %let original_ORIENTATION = %sysfunc(getoption(orientation));
-880           options ps=max orientation=landscape;
-881        
-882           %* Setup ODS output for PDF file with name using macro parameter (filein) ;
-883           %* with system date attached e.g. /path/to/file/name_27JUL21.pdf          ;
-884           %* where filein=/path/to/file/name                                        ;
-885           ods listing close;
-886           ods noresults;
-887           ods pdf file="&comploc.DDData_Compare.pdf";
-888        
-889           %macro comp_loop(lib=);
-890           %do i = 1 %to &file_count; ;
-891         %* define a value to accumulate all the proc compare results into;
-892            %let compres=0;
-893        
-894           %* Loop through every dataset in the original/old library and proc compare ;
-895           %* with the dataset of same name in the new library.                       ;
-896              title  "Compare of display";
-897              title2 "from- &lib";
-898              title3 "to- ISS";
-899              proc compare base=dddataC.&&file&i.._&lib.
-900                           compare=dddataC.&&file&i.._&lib.C
-901                           listall
-902                           maxprint=(50,2000);
-903              run;
-904              %* accumulate the sysinfo (which is a binary value);
-905              %let compres = %sysfunc(bOR(&sysinfo, &compres.));
-906           %end;
-907           %mend comp_loop;
-908           %do d = 1 %to &compn.;
-17                                                         The SAS System                                13:36 Friday, March 3, 2023
+856        data files;
+857         keep filename n rc;
+858         length fref $8 filename $80;
+859         rc = filename(fref, "&drivlib.drivers/");
+860             if rc = 0 then
+861             do;
+862             did = dopen(fref);
+863             rc = filename(fref);
+864             end;
+865             dnum = dnum(did);
+866             do i = 1 to dnum;
+867             filename = dread(did, i);
+868             n = i;
+869        
+870             fid = mopen(did, filename);
+871             if fid > 0
+872             then
+873             output;
+874             end;
+875             rc = dclose(did);
+876         run;
+877        
+878         data files;
+879            set files (where=(index(filename,"t_")>0));
+880        
+881            filename=compress(tranwrd(filename,".sas",""));
+882         run;
+883        
+884         proc sql noprint;
+885            select count(*)
+886             into :file_count
+887             from files;
+888         quit;
+889        
+890         %put &file_count;
+891        
+892        proc sql noprint;
+893            select filename into: file1 - :file%left(&file_count.)
+894            from files;
+895        quit;
+896        
+897        
+898        libname dddatac &ddlib.;
+899        
+900         %*- SET SYSTEM OPTIONS LOCALLY FOR THIS MACRO;
+901           %* we are going to create a lot of output (e.g. proc compare) so set pagesize to max ;
+902           %* first, save the current options so that we can restore at end of macro ;
+903           %let original_PS = %sysfunc(getoption(PS));
+904           %let original_ORIENTATION = %sysfunc(getoption(orientation));
+905           options ps=max orientation=landscape;
+906        
+907           %* Setup ODS output for PDF file with name using macro parameter (filein) ;
+908           %* with system date attached e.g. /path/to/file/name_27JUL21.pdf          ;
+17                                                         The SAS System                                15:45 Friday, March 3, 2023
 
-909           %comp_loop(lib=&&lib&d..);
-910           %end;
-911          ods pdf close;
-912        
-913           %* TIDY UP;
-914        
-915           %* restore the original PS (pagesize) option ;
-916           options PS=&original_PS orientation=&original_ORIENTATION;
-917        
-918        %mend compare_displays;
-919        
-920        %compare_displays(ddlib="&complib.dddata");
-921        
-922        
-923        %end;
-924        
-925        %mend iss_comparison;
-926        %iss_comparison(
-927        mainlib_data=%str(/mnt/data/US_PhUSE_ISS_Tool/ISS/),
-928        mainlib=%str(/mnt/code/ISS/),
-929        complib=%str(/mnt/code/ISS/test/),
-930        complib_data=%str(/mnt/data/US_PhUSE_ISS_Tool/test/),
-931        compn=3,
-932        ds_remove =("NONE"),
-933        lib1=STUDY1,
-934        lib2=STUDY2,
-935        lib3=STUDY3,
-936        filter1=%str(STUDYID = "STUDY1"),
-937        filter2=%str(STUDYID = "STUDY2"),
-938        filter3=%str(STUDYID = "STUDY3"),
-939        csv = %str(/mnt/code/CSV/ISS_Var_Rename.csv),
-940        complib1=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY1'),
-941        complib2=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY2'),
-942        complib3=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY3'),
-943        comploc=%str(\mnt\code\ISS\Compares\),
-944        compfilt1=,
-945        compfilt2=,
-946        compfilt3=,
-947        compfilt4=,
-948        compfilt5=,
-949        disp = N,
-950        drivlib = %str(/mnt/code/ISS/));
+909           %* where filein=/path/to/file/name                                        ;
+910           ods listing close;
+911           ods noresults;
+912           ods pdf file="&comploc.DDData_Compare.pdf";
+913        
+914           %macro comp_loop(lib=);
+915           %do i = 1 %to &file_count; ;
+916         %* define a value to accumulate all the proc compare results into;
+917            %let compres=0;
+918        
+919           %* Loop through every dataset in the original/old library and proc compare ;
+920           %* with the dataset of same name in the new library.                       ;
+921              title  "Compare of display";
+922              title2 "from- &lib";
+923              title3 "to- ISS";
+924              proc compare base=dddataC.&&file&i.._&lib.
+925                           compare=dddataC.&&file&i.._&lib.C
+926                           listall
+927                           maxprint=(50,2000);
+928              run;
+929              %* accumulate the sysinfo (which is a binary value);
+930              %let compres = %sysfunc(bOR(&sysinfo, &compres.));
+931           %end;
+932           %mend comp_loop;
+933           %do d = 1 %to &compn.;
+934           %comp_loop(lib=&&lib&d..);
+935           %end;
+936          ods pdf close;
+937        
+938           %* TIDY UP;
+939        
+940           %* restore the original PS (pagesize) option ;
+941           options PS=&original_PS orientation=&original_ORIENTATION;
+942        
+943        %mend compare_displays;
+944        
+945        %compare_displays(ddlib="&complib.dddata");
+946        */
+947        
+948        %end;
+949        
+950        %mend iss_comparison;
+951        %iss_comparison(
+952        mainlib_data=%str(/mnt/data/US_PhUSE_ISS_Tool/ISS/),
+953        mainlib=%str(/mnt/code/ISS/),
+954        complib=%str(/mnt/code/ISS/test/),
+955        complib_data=%str(/mnt/data/US_PhUSE_ISS_Tool/test/),
+956        compn=3,
+957        ds_remove =("NONE"),
+958        lib1=STUDY1,
+959        lib2=STUDY2,
+960        lib3=STUDY3,
+961        filter1=%str(STUDYID = "STUDY1"),
+962        filter2=%str(STUDYID = "STUDY2"),
+963        filter3=%str(STUDYID = "STUDY3"),
+964        csv = %str(/mnt/code/CSV/ISS_Var_Rename.csv),
+965        complib1=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY1'),
+966        complib2=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY2'),
+18                                                         The SAS System                                15:45 Friday, March 3, 2023
+
+967        complib3=%str('/mnt/data/US_PhUSE_ISS_Tool/Original/STUDY3'),
+968        comploc=%str(\mnt\code\ISS\Compares\),
+969        compfilt1=,
+970        compfilt2=,
+971        compfilt3=,
+972        compfilt4=,
+973        compfilt5=,
+974        disp = Y,
+975        datac=Y,
+976        drivlib = %str(/mnt/code/));
 
 NOTE: The data set WORK.LIB_LIST has 3 observations and 1 variables.
 NOTE: DATA statement used (Total process time):
@@ -1018,8 +1046,6 @@ NOTE: DATA statement used (Total process time):
 
 
 NOTE: There were 2 observations read from the data set WORK.FILES.
-18                                                         The SAS System                                13:36 Friday, March 3, 2023
-
       WHERE INDEX(filename, '.sas7bdat')>0;
 NOTE: The data set WORK.FILES has 2 observations and 1 variables.
 NOTE: DATA statement used (Total process time):
@@ -1029,7 +1055,7 @@ NOTE: DATA statement used (Total process time):
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 NOTE: PROCEDURE SQL used (Total process time):
@@ -1048,10 +1074,12 @@ NOTE: Data file COMP.ADAE.DATA is in a format that is native to another host, or
       encoding. Cross Environment Data Access will be used, which might require additional CPU resources and might reduce 
       performance.
 NOTE: There were 22 observations read from the data set ADAMDATA.ADAE.
-NOTE: The data set COMP.ADAE has 12 observations and 103 variables.
+NOTE: The data set COMP.ADAE has 12 observations and 104 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.11 seconds
+      real time           0.08 seconds
       cpu time            0.01 seconds
+19                                                         The SAS System                                15:45 Friday, March 3, 2023
+
       
 
 NOTE: Libref COMP was successfully assigned as follows: 
@@ -1078,16 +1106,14 @@ NOTE: Libref ADAMDATA was successfully assigned as follows:
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/ISS/adamdata
 
-19                                                         The SAS System                                13:36 Friday, March 3, 2023
-
 NOTE: Data file COMP.ADAE.DATA is in a format that is native to another host, or the file encoding does not match the session 
       encoding. Cross Environment Data Access will be used, which might require additional CPU resources and might reduce 
       performance.
 NOTE: There were 22 observations read from the data set ADAMDATA.ADAE.
-NOTE: The data set COMP.ADAE has 1 observations and 103 variables.
+NOTE: The data set COMP.ADAE has 1 observations and 104 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.09 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Libref COMP was successfully assigned as follows: 
@@ -1104,7 +1130,7 @@ NOTE: There were 30 observations read from the data set ADAMDATA.ADSL.
 NOTE: The data set COMP.ADSL has 10 observations and 46 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.07 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Libref COMP was successfully assigned as follows: 
@@ -1112,15 +1138,17 @@ NOTE: Libref COMP was successfully assigned as follows:
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3C
 NOTE: Libref ADAMDATA was successfully assigned as follows: 
       Engine:        V9 
+20                                                         The SAS System                                15:45 Friday, March 3, 2023
+
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/ISS/adamdata
 
 NOTE: Data file COMP.ADAE.DATA is in a format that is native to another host, or the file encoding does not match the session 
       encoding. Cross Environment Data Access will be used, which might require additional CPU resources and might reduce 
       performance.
 NOTE: There were 22 observations read from the data set ADAMDATA.ADAE.
-NOTE: The data set COMP.ADAE has 9 observations and 103 variables.
+NOTE: The data set COMP.ADAE has 9 observations and 104 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
+      real time           0.08 seconds
       cpu time            0.01 seconds
       
 
@@ -1137,9 +1165,7 @@ NOTE: Data file COMP.ADSL.DATA is in a format that is native to another host, or
 NOTE: There were 30 observations read from the data set ADAMDATA.ADSL.
 NOTE: The data set COMP.ADSL has 10 observations and 46 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
-20                                                         The SAS System                                13:36 Friday, March 3, 2023
-
+      real time           0.08 seconds
       cpu time            0.00 seconds
       
 
@@ -1164,7 +1190,7 @@ NOTE: There were 10 observations read from the data set STUDY1.ADSL.
 NOTE: The data set WORK.ADSL_STUDY1 has 10 observations and 55 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 NOTE: Libref COMP was successfully assigned as follows: 
@@ -1172,16 +1198,18 @@ NOTE: Libref COMP was successfully assigned as follows:
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY1
 
 NOTE: There were 12 observations read from the data set STUDY1.ADAE.
-NOTE: The data set WORK.ADAE_PRE has 12 observations and 105 variables.
+21                                                         The SAS System                                15:45 Friday, March 3, 2023
+
+NOTE: The data set WORK.ADAE_PRE has 12 observations and 106 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: There were 12 observations read from the data set WORK.ADAE_PRE.
 NOTE: There were 10 observations read from the data set WORK.ADSL_STUDY1.
-NOTE: The data set COMP.ADAE has 12 observations and 109 variables.
+NOTE: The data set COMP.ADAE has 12 observations and 110 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.06 seconds
       cpu time            0.00 seconds
@@ -1190,66 +1218,66 @@ NOTE: DATA statement used (Total process time):
 
 NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to 
 WORK.PARMS.PARMS.SLIST.
-951         /**********************************************************************
-952         *   PRODUCT:   SAS
-953         *   VERSION:   V.04.00
-954         *   CREATOR:   External File Interface
-955         *   DATE:      03MAR23
-956         *   DESC:      Generated SAS Datastep Code
-957         *   TEMPLATE SOURCE:  (None Specified.)
-958         ***********************************************************************/
-21                                                         The SAS System                                13:36 Friday, March 3, 2023
-
-959            data WORK.RENAM    ;
-960            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-961            infile '/mnt/code/CSV/ISS_Var_Rename.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
-962               informat DATASET $4. ;
-963               informat STUDY $6. ;
-964               informat OLD_VAR $7. ;
-965               informat NEW_VAR $7. ;
-966               format DATASET $4. ;
-967               format STUDY $6. ;
-968               format OLD_VAR $7. ;
-969               format NEW_VAR $7. ;
-970            input
-971                        DATASET  $
-972                        STUDY  $
-973                        OLD_VAR  $
-974                        NEW_VAR  $
-975            ;
-976            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-977            run;
+977         /**********************************************************************
+978         *   PRODUCT:   SAS
+979         *   VERSION:   V.04.00
+980         *   CREATOR:   External File Interface
+981         *   DATE:      03MAR23
+982         *   DESC:      Generated SAS Datastep Code
+983         *   TEMPLATE SOURCE:  (None Specified.)
+984         ***********************************************************************/
+985            data WORK.RENAM    ;
+986            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+987            infile '/mnt/code/CSV/ISS_Var_Rename.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
+988               informat DATASET $4. ;
+989               informat STUDY $6. ;
+990               informat OLD_VAR $7. ;
+991               informat NEW_VAR $7. ;
+992               format DATASET $4. ;
+993               format STUDY $6. ;
+994               format OLD_VAR $7. ;
+995               format NEW_VAR $7. ;
+996            input
+997                        DATASET  $
+998                        STUDY  $
+999                        OLD_VAR  $
+1000                       NEW_VAR  $
+1001           ;
+1002           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+1003           run;
 
 NOTE: The infile '/mnt/code/CSV/ISS_Var_Rename.csv' is:
       Filename=/mnt/code/CSV/ISS_Var_Rename.csv,
       Owner Name=domino,Group Name=domino,
       Access Permission=-rw-r--r--,
-      Last Modified=03Mar2023:13:12:41,
-      File Size (bytes)=228
+      Last Modified=03Mar2023:14:28:10,
+      File Size (bytes)=396
 
-NOTE: 7 records were read from the infile '/mnt/code/CSV/ISS_Var_Rename.csv'.
+NOTE: 13 records were read from the infile '/mnt/code/CSV/ISS_Var_Rename.csv'.
       The minimum record length was 25.
       The maximum record length was 27.
-NOTE: The data set WORK.RENAM has 7 observations and 4 variables.
+NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
+22                                                         The SAS System                                15:45 Friday, March 3, 2023
+
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
-7 rows created in WORK.RENAM from /mnt/code/CSV/ISS_Var_Rename.csv.
+13 rows created in WORK.RENAM from /mnt/code/CSV/ISS_Var_Rename.csv.
   
   
   
 NOTE: WORK.RENAM data set was successfully created.
-NOTE: The data set WORK.RENAM has 7 observations and 4 variables.
+NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: PROCEDURE IMPORT used (Total process time):
       real time           0.03 seconds
-      cpu time            0.04 seconds
+      cpu time            0.03 seconds
       
 
 
-NOTE: There were 7 observations read from the data set WORK.RENAM.
-NOTE: The data set WORK.RENAM_FORMAT has 7 observations and 4 variables.
+NOTE: There were 13 observations read from the data set WORK.RENAM.
+NOTE: The data set WORK.RENAM_FORMAT has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
@@ -1257,78 +1285,76 @@ NOTE: DATA statement used (Total process time):
 
 STUDY1_adae_cont
 
-NOTE: There were 7 observations read from the data set WORK.RENAM_FORMAT.
-22                                                         The SAS System                                13:36 Friday, March 3, 2023
-
-NOTE: The data set WORK.DS_IN has 7 observations and 4 variables.
+NOTE: There were 13 observations read from the data set WORK.RENAM_FORMAT.
+NOTE: The data set WORK.DS_IN has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 
 
-NOTE: The data set WORK.DS_IN has 109 observations and 41 variables.
+NOTE: The data set WORK.DS_IN has 110 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.07 seconds
+      real time           0.02 seconds
       cpu time            0.01 seconds
       
 
 
-NOTE: There were 109 observations read from the data set WORK.DS_IN.
-NOTE: The data set WORK.CONT_ALL has 109 observations and 42 variables.
+NOTE: There were 110 observations read from the data set WORK.DS_IN.
+NOTE: The data set WORK.CONT_ALL has 110 observations and 42 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 
-NOTE: Table WORK.RENAME_IDENTIFY created, with 1 rows and 4 columns.
+NOTE: Table WORK.RENAME_IDENTIFY created, with 3 rows and 4 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
-NOTE: There were 1 observations read from the data set WORK.RENAME_IDENTIFY.
-NOTE: The data set WORK.RENAME_IDENTIFY has 1 observations and 4 variables.
+NOTE: There were 3 observations read from the data set WORK.RENAME_IDENTIFY.
+NOTE: The data set WORK.RENAME_IDENTIFY has 3 observations and 4 variables.
 NOTE: PROCEDURE SORT used (Total process time):
+23                                                         The SAS System                                15:45 Friday, March 3, 2023
+
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 
 
-NOTE: There were 1 observations read from the data set WORK.RENAME_IDENTIFY.
-NOTE: The data set WORK.RENAME_IDENTIFY has 1 observations and 5 variables.
+NOTE: There were 3 observations read from the data set WORK.RENAME_IDENTIFY.
+NOTE: The data set WORK.RENAME_IDENTIFY has 3 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 
 
-NOTE: There were 1 observations read from the data set WORK.RENAME_IDENTIFY.
+NOTE: There were 3 observations read from the data set WORK.RENAME_IDENTIFY.
       WHERE (memname='ADAE') and (study='STUDY1');
-NOTE: The data set WORK.RENAME_NUM has 1 observations and 5 variables.
+NOTE: The data set WORK.RENAME_NUM has 3 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-23                                                         The SAS System                                13:36 Friday, March 3, 2023
-
-NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
       cpu time            0.01 seconds
       
 
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
 
-NOTE: There were 1 observations read from the data set WORK.RENAME_IDENTIFY.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 3 observations read from the data set WORK.RENAME_IDENTIFY.
       WHERE memname='ADAE';
-NOTE: The data set WORK.NEW_VAR_T has 1 observations and 1 variables.
+NOTE: The data set WORK.NEW_VAR_T has 1 observations and 3 variables.
 NOTE: PROCEDURE TRANSPOSE used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
@@ -1348,19 +1374,57 @@ NOTE: PROCEDURE SQL used (Total process time):
       cpu time            0.00 seconds
       
 
-NOTE: Table WORK.TEMP created, with 12 rows and 6 columns.
+NOTE: Table WORK.TEMP created, with 12 rows and 8 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+24                                                         The SAS System                                15:45 Friday, March 3, 2023
+
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 12 observations read from the data set COMP.ADAE.
+NOTE: The data set WORK.TEMP2 has 12 observations and 107 variables.
+NOTE: PROCEDURE SORT used (Total process time):
       real time           0.01 seconds
       cpu time            0.00 seconds
       
 
 
-NOTE: There were 12 observations read from the data set COMP.ADAE.
-NOTE: The data set WORK.TEMP2 has 12 observations and 108 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
+NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
+      WHERE (libname='COMP') and (memname='ADAE') and (name='AGEGR4');
+NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
+      WHERE (libname='ADAMDATA') and (memname='ADAE') and (name='AGEGR1');
+NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
+      WHERE (libname='COMP') and (memname='ADAE') and (name='AGEGR4N');
+NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
       cpu time            0.01 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
+      WHERE (libname='ADAMDATA') and (memname='ADAE') and (name='AGEGR1N');
+NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -1374,18 +1438,18 @@ NOTE: DATA statement used (Total process time):
 
 
 NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
+25                                                         The SAS System                                15:45 Friday, March 3, 2023
+
       WHERE (libname='ADAMDATA') and (memname='ADAE') and (name='CQ02NAM');
 NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-24                                                         The SAS System                                13:36 Friday, March 3, 2023
-
       cpu time            0.00 seconds
       
 
 
 NOTE: There were 12 observations read from the data set WORK.TEMP.
-NOTE: The data set WORK.TEMP_RENAM has 12 observations and 6 variables.
+NOTE: The data set WORK.TEMP_RENAM has 12 observations and 8 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
@@ -1393,7 +1457,7 @@ NOTE: DATA statement used (Total process time):
 
 
 NOTE: There were 12 observations read from the data set WORK.TEMP_RENAM.
-NOTE: The data set WORK.TEMP_RENAM has 12 observations and 6 variables.
+NOTE: The data set WORK.TEMP_RENAM has 12 observations and 8 variables.
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
@@ -1402,7 +1466,7 @@ NOTE: PROCEDURE SORT used (Total process time):
 
 NOTE: There were 12 observations read from the data set WORK.TEMP2.
 NOTE: There were 12 observations read from the data set WORK.TEMP_RENAM.
-NOTE: The data set COMP.ADAE has 12 observations and 108 variables.
+NOTE: The data set COMP.ADAE has 12 observations and 107 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.06 seconds
       cpu time            0.01 seconds
@@ -1421,86 +1485,86 @@ NOTE: Libref COMP was successfully assigned as follows:
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY2
 
 NOTE: There were 1 observations read from the data set STUDY2.ADAE.
-NOTE: The data set WORK.ADAE_PRE has 1 observations and 103 variables.
+NOTE: The data set WORK.ADAE_PRE has 1 observations and 105 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
 NOTE: There were 1 observations read from the data set WORK.ADAE_PRE.
 NOTE: There were 10 observations read from the data set WORK.ADSL_STUDY2.
-NOTE: The data set COMP.ADAE has 1 observations and 107 variables.
+NOTE: The data set COMP.ADAE has 1 observations and 109 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.06 seconds
       cpu time            0.00 seconds
+26                                                         The SAS System                                15:45 Friday, March 3, 2023
+
       
 
 
 NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to 
-25                                                         The SAS System                                13:36 Friday, March 3, 2023
-
 WORK.PARMS.PARMS.SLIST.
-978         /**********************************************************************
-979         *   PRODUCT:   SAS
-980         *   VERSION:   V.04.00
-981         *   CREATOR:   External File Interface
-982         *   DATE:      03MAR23
-983         *   DESC:      Generated SAS Datastep Code
-984         *   TEMPLATE SOURCE:  (None Specified.)
-985         ***********************************************************************/
-986            data WORK.RENAM    ;
-987            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-988            infile '/mnt/code/CSV/ISS_Var_Rename.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
-989               informat DATASET $4. ;
-990               informat STUDY $6. ;
-991               informat OLD_VAR $7. ;
-992               informat NEW_VAR $7. ;
-993               format DATASET $4. ;
-994               format STUDY $6. ;
-995               format OLD_VAR $7. ;
-996               format NEW_VAR $7. ;
-997            input
-998                        DATASET  $
-999                        STUDY  $
-1000                       OLD_VAR  $
-1001                       NEW_VAR  $
-1002           ;
-1003           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-1004           run;
+1004        /**********************************************************************
+1005        *   PRODUCT:   SAS
+1006        *   VERSION:   V.04.00
+1007        *   CREATOR:   External File Interface
+1008        *   DATE:      03MAR23
+1009        *   DESC:      Generated SAS Datastep Code
+1010        *   TEMPLATE SOURCE:  (None Specified.)
+1011        ***********************************************************************/
+1012           data WORK.RENAM    ;
+1013           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+1014           infile '/mnt/code/CSV/ISS_Var_Rename.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
+1015              informat DATASET $4. ;
+1016              informat STUDY $6. ;
+1017              informat OLD_VAR $7. ;
+1018              informat NEW_VAR $7. ;
+1019              format DATASET $4. ;
+1020              format STUDY $6. ;
+1021              format OLD_VAR $7. ;
+1022              format NEW_VAR $7. ;
+1023           input
+1024                       DATASET  $
+1025                       STUDY  $
+1026                       OLD_VAR  $
+1027                       NEW_VAR  $
+1028           ;
+1029           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+1030           run;
 
 NOTE: The infile '/mnt/code/CSV/ISS_Var_Rename.csv' is:
       Filename=/mnt/code/CSV/ISS_Var_Rename.csv,
       Owner Name=domino,Group Name=domino,
       Access Permission=-rw-r--r--,
-      Last Modified=03Mar2023:13:12:41,
-      File Size (bytes)=228
+      Last Modified=03Mar2023:14:28:10,
+      File Size (bytes)=396
 
-NOTE: 7 records were read from the infile '/mnt/code/CSV/ISS_Var_Rename.csv'.
+NOTE: 13 records were read from the infile '/mnt/code/CSV/ISS_Var_Rename.csv'.
       The minimum record length was 25.
       The maximum record length was 27.
-NOTE: The data set WORK.RENAM has 7 observations and 4 variables.
+NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.01 seconds
       
 
-7 rows created in WORK.RENAM from /mnt/code/CSV/ISS_Var_Rename.csv.
+13 rows created in WORK.RENAM from /mnt/code/CSV/ISS_Var_Rename.csv.
   
   
   
 NOTE: WORK.RENAM data set was successfully created.
-NOTE: The data set WORK.RENAM has 7 observations and 4 variables.
+NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: PROCEDURE IMPORT used (Total process time):
       real time           0.02 seconds
-      cpu time            0.03 seconds
+      cpu time            0.04 seconds
+27                                                         The SAS System                                15:45 Friday, March 3, 2023
+
       
 
 
-NOTE: There were 7 observations read from the data set WORK.RENAM.
-26                                                         The SAS System                                13:36 Friday, March 3, 2023
-
-NOTE: The data set WORK.RENAM_FORMAT has 7 observations and 4 variables.
+NOTE: There were 13 observations read from the data set WORK.RENAM.
+NOTE: The data set WORK.RENAM_FORMAT has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
@@ -1508,145 +1572,266 @@ NOTE: DATA statement used (Total process time):
 
 STUDY2_adae_cont
 
-NOTE: There were 7 observations read from the data set WORK.RENAM_FORMAT.
-NOTE: The data set WORK.DS_IN has 7 observations and 4 variables.
+NOTE: There were 13 observations read from the data set WORK.RENAM_FORMAT.
+NOTE: The data set WORK.DS_IN has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 
 
-NOTE: The data set WORK.DS_IN has 107 observations and 41 variables.
+NOTE: The data set WORK.DS_IN has 109 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
       real time           0.01 seconds
       cpu time            0.00 seconds
       
 
 
-NOTE: There were 107 observations read from the data set WORK.DS_IN.
-NOTE: The data set WORK.CONT_ALL has 107 observations and 42 variables.
+NOTE: There were 109 observations read from the data set WORK.DS_IN.
+NOTE: The data set WORK.CONT_ALL has 109 observations and 42 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 
-NOTE: Table WORK.RENAME_IDENTIFY created, with 0 rows and 4 columns.
+NOTE: Table WORK.RENAME_IDENTIFY created, with 2 rows and 4 columns.
 
-NOTE: No rows were selected.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.05 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.02 seconds
       
 
 
-NOTE: Input data set is empty.
-NOTE: The data set WORK.RENAME_IDENTIFY has 0 observations and 4 variables.
+NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
+NOTE: The data set WORK.RENAME_IDENTIFY has 2 observations and 4 variables.
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 
 
-NOTE: There were 0 observations read from the data set WORK.RENAME_IDENTIFY.
-NOTE: The data set WORK.RENAME_IDENTIFY has 0 observations and 5 variables.
+NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
+NOTE: The data set WORK.RENAME_IDENTIFY has 2 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 
 
+28                                                         The SAS System                                15:45 Friday, March 3, 2023
+
+NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
+      WHERE (memname='ADAE') and (study='STUDY2');
+NOTE: The data set WORK.RENAME_NUM has 2 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
+      WHERE memname='ADAE';
+NOTE: The data set WORK.NEW_VAR_T has 1 observations and 2 variables.
+NOTE: PROCEDURE TRANSPOSE used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 5 observations read from the data set SASHELP.VCOLUMN.
+      WHERE (libname='ADAMDATA') and (memname='ADAE') and (sortedby not = 0);
+NOTE: The data set WORK.SORTEDBY has 5 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Table WORK.TEMP created, with 1 rows and 7 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set COMP.ADAE.
+NOTE: The data set WORK.TEMP2 has 1 observations and 107 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
+29                                                         The SAS System                                15:45 Friday, March 3, 2023
+
+      WHERE (libname='COMP') and (memname='ADAE') and (name='AGEGR6');
+NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
+      WHERE (libname='ADAMDATA') and (memname='ADAE') and (name='AGEGR1');
+NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
+      WHERE (libname='COMP') and (memname='ADAE') and (name='AGEGR6N');
+NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
+      WHERE (libname='ADAMDATA') and (memname='ADAE') and (name='AGEGR1N');
+NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set WORK.TEMP.
+NOTE: The data set WORK.TEMP_RENAM has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set WORK.TEMP_RENAM.
+NOTE: The data set WORK.TEMP_RENAM has 1 observations and 7 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set WORK.TEMP2.
+NOTE: There were 1 observations read from the data set WORK.TEMP_RENAM.
+NOTE: The data set COMP.ADAE has 1 observations and 107 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.08 seconds
+      cpu time            0.00 seconds
+      
+30                                                         The SAS System                                15:45 Friday, March 3, 2023
+
+
+
 NOTE: There were 10 observations read from the data set STUDY3.ADSL.
 NOTE: The data set WORK.ADSL_STUDY3 has 10 observations and 46 variables.
 NOTE: DATA statement used (Total process time):
-27                                                         The SAS System                                13:36 Friday, March 3, 2023
-
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 NOTE: Libref COMP was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3
 
-NOTE: There were 3 observations read from the data set STUDY3.ADAE.
-NOTE: The data set WORK.ADAE_PRE has 3 observations and 96 variables.
+NOTE: There were 9 observations read from the data set STUDY3.ADAE.
+NOTE: The data set WORK.ADAE_PRE has 9 observations and 96 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
       cpu time            0.00 seconds
       
 
 
-NOTE: There were 3 observations read from the data set WORK.ADAE_PRE.
+NOTE: There were 9 observations read from the data set WORK.ADAE_PRE.
 NOTE: There were 10 observations read from the data set WORK.ADSL_STUDY3.
-NOTE: The data set COMP.ADAE has 3 observations and 100 variables.
+NOTE: The data set COMP.ADAE has 9 observations and 100 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
+      real time           0.07 seconds
       cpu time            0.01 seconds
       
 
 
 NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to 
 WORK.PARMS.PARMS.SLIST.
-1005        /**********************************************************************
-1006        *   PRODUCT:   SAS
-1007        *   VERSION:   V.04.00
-1008        *   CREATOR:   External File Interface
-1009        *   DATE:      03MAR23
-1010        *   DESC:      Generated SAS Datastep Code
-1011        *   TEMPLATE SOURCE:  (None Specified.)
-1012        ***********************************************************************/
-1013           data WORK.RENAM    ;
-1014           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-1015           infile '/mnt/code/CSV/ISS_Var_Rename.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
-1016              informat DATASET $4. ;
-1017              informat STUDY $6. ;
-1018              informat OLD_VAR $7. ;
-1019              informat NEW_VAR $7. ;
-1020              format DATASET $4. ;
-1021              format STUDY $6. ;
-1022              format OLD_VAR $7. ;
-1023              format NEW_VAR $7. ;
-1024           input
-1025                       DATASET  $
-1026                       STUDY  $
-1027                       OLD_VAR  $
-1028                       NEW_VAR  $
-1029           ;
-1030           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-1031           run;
+1031        /**********************************************************************
+1032        *   PRODUCT:   SAS
+1033        *   VERSION:   V.04.00
+1034        *   CREATOR:   External File Interface
+1035        *   DATE:      03MAR23
+1036        *   DESC:      Generated SAS Datastep Code
+1037        *   TEMPLATE SOURCE:  (None Specified.)
+1038        ***********************************************************************/
+1039           data WORK.RENAM    ;
+1040           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+1041           infile '/mnt/code/CSV/ISS_Var_Rename.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
+1042              informat DATASET $4. ;
+1043              informat STUDY $6. ;
+1044              informat OLD_VAR $7. ;
+1045              informat NEW_VAR $7. ;
+1046              format DATASET $4. ;
+1047              format STUDY $6. ;
+1048              format OLD_VAR $7. ;
+1049              format NEW_VAR $7. ;
+1050           input
+1051                       DATASET  $
+1052                       STUDY  $
+1053                       OLD_VAR  $
+1054                       NEW_VAR  $
+1055           ;
+1056           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+31                                                         The SAS System                                15:45 Friday, March 3, 2023
+
+1057           run;
 
 NOTE: The infile '/mnt/code/CSV/ISS_Var_Rename.csv' is:
       Filename=/mnt/code/CSV/ISS_Var_Rename.csv,
       Owner Name=domino,Group Name=domino,
-28                                                         The SAS System                                13:36 Friday, March 3, 2023
-
       Access Permission=-rw-r--r--,
-      Last Modified=03Mar2023:13:12:41,
-      File Size (bytes)=228
+      Last Modified=03Mar2023:14:28:10,
+      File Size (bytes)=396
 
-NOTE: 7 records were read from the infile '/mnt/code/CSV/ISS_Var_Rename.csv'.
+NOTE: 13 records were read from the infile '/mnt/code/CSV/ISS_Var_Rename.csv'.
       The minimum record length was 25.
       The maximum record length was 27.
-NOTE: The data set WORK.RENAM has 7 observations and 4 variables.
+NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.01 seconds
       
 
-7 rows created in WORK.RENAM from /mnt/code/CSV/ISS_Var_Rename.csv.
+13 rows created in WORK.RENAM from /mnt/code/CSV/ISS_Var_Rename.csv.
   
   
   
 NOTE: WORK.RENAM data set was successfully created.
-NOTE: The data set WORK.RENAM has 7 observations and 4 variables.
+NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: PROCEDURE IMPORT used (Total process time):
       real time           0.02 seconds
       cpu time            0.03 seconds
       
 
 
-NOTE: There were 7 observations read from the data set WORK.RENAM.
-NOTE: The data set WORK.RENAM_FORMAT has 7 observations and 4 variables.
+NOTE: There were 13 observations read from the data set WORK.RENAM.
+NOTE: The data set WORK.RENAM_FORMAT has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
@@ -1654,8 +1839,8 @@ NOTE: DATA statement used (Total process time):
 
 STUDY3_adae_cont
 
-NOTE: There were 7 observations read from the data set WORK.RENAM_FORMAT.
-NOTE: The data set WORK.DS_IN has 7 observations and 4 variables.
+NOTE: There were 13 observations read from the data set WORK.RENAM_FORMAT.
+NOTE: The data set WORK.DS_IN has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
@@ -1673,32 +1858,153 @@ NOTE: There were 100 observations read from the data set WORK.DS_IN.
 NOTE: The data set WORK.CONT_ALL has 100 observations and 42 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
+32                                                         The SAS System                                15:45 Friday, March 3, 2023
+
       cpu time            0.00 seconds
       
 
-NOTE: Table WORK.RENAME_IDENTIFY created, with 0 rows and 4 columns.
+NOTE: Table WORK.RENAME_IDENTIFY created, with 2 rows and 4 columns.
 
-29                                                         The SAS System                                13:36 Friday, March 3, 2023
-
-NOTE: No rows were selected.
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
-NOTE: Input data set is empty.
-NOTE: The data set WORK.RENAME_IDENTIFY has 0 observations and 4 variables.
+NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
+NOTE: The data set WORK.RENAME_IDENTIFY has 2 observations and 4 variables.
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 
 
-NOTE: There were 0 observations read from the data set WORK.RENAME_IDENTIFY.
-NOTE: The data set WORK.RENAME_IDENTIFY has 0 observations and 5 variables.
+NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
+NOTE: The data set WORK.RENAME_IDENTIFY has 2 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
+      WHERE (memname='ADAE') and (study='STUDY3');
+NOTE: The data set WORK.RENAME_NUM has 2 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
+      WHERE memname='ADAE';
+NOTE: The data set WORK.NEW_VAR_T has 1 observations and 2 variables.
+NOTE: PROCEDURE TRANSPOSE used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 5 observations read from the data set SASHELP.VCOLUMN.
+      WHERE (libname='ADAMDATA') and (memname='ADAE') and (sortedby not = 0);
+NOTE: The data set WORK.SORTEDBY has 5 observations and 18 variables.
+33                                                         The SAS System                                15:45 Friday, March 3, 2023
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: Table WORK.TEMP created, with 9 rows and 7 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 9 observations read from the data set COMP.ADAE.
+NOTE: The data set WORK.TEMP2 has 9 observations and 98 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
+      WHERE (libname='COMP') and (memname='ADAE') and (name='AGEGR1');
+NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
+      WHERE (libname='ADAMDATA') and (memname='ADAE') and (name='AGEGR2');
+NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
+      WHERE (libname='COMP') and (memname='ADAE') and (name='AGEGR1N');
+NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
+      WHERE (libname='ADAMDATA') and (memname='ADAE') and (name='AGEGR2N');
+NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+34                                                         The SAS System                                15:45 Friday, March 3, 2023
+
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 9 observations read from the data set WORK.TEMP.
+NOTE: The data set WORK.TEMP_RENAM has 9 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 9 observations read from the data set WORK.TEMP_RENAM.
+NOTE: The data set WORK.TEMP_RENAM has 9 observations and 7 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 9 observations read from the data set WORK.TEMP2.
+NOTE: There were 9 observations read from the data set WORK.TEMP_RENAM.
+NOTE: The data set COMP.ADAE has 9 observations and 98 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
       cpu time            0.00 seconds
       
 
@@ -1716,7 +2022,7 @@ NOTE: There were 10 observations read from the data set STUDY1.ADSL.
 NOTE: The data set WORK.ADSL_STUDY1 has 10 observations and 55 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 NOTE: Libref COMP was successfully assigned as follows: 
@@ -1726,83 +2032,83 @@ NOTE: Libref COMP was successfully assigned as follows:
 NOTE: There were 10 observations read from the data set STUDY1.ADSL.
 NOTE: The data set WORK.ADSL_PRE has 10 observations and 47 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
+      real time           0.00 seconds
       cpu time            0.00 seconds
       
 
 
 NOTE: There were 10 observations read from the data set WORK.ADSL_STUDY1.
+35                                                         The SAS System                                15:45 Friday, March 3, 2023
+
 NOTE: The data set COMP.ADSL has 10 observations and 55 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
+      real time           0.06 seconds
       cpu time            0.00 seconds
       
-
-30                                                         The SAS System                                13:36 Friday, March 3, 2023
 
 
 NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to 
 WORK.PARMS.PARMS.SLIST.
-1032        /**********************************************************************
-1033        *   PRODUCT:   SAS
-1034        *   VERSION:   V.04.00
-1035        *   CREATOR:   External File Interface
-1036        *   DATE:      03MAR23
-1037        *   DESC:      Generated SAS Datastep Code
-1038        *   TEMPLATE SOURCE:  (None Specified.)
-1039        ***********************************************************************/
-1040           data WORK.RENAM    ;
-1041           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-1042           infile '/mnt/code/CSV/ISS_Var_Rename.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
-1043              informat DATASET $4. ;
-1044              informat STUDY $6. ;
-1045              informat OLD_VAR $7. ;
-1046              informat NEW_VAR $7. ;
-1047              format DATASET $4. ;
-1048              format STUDY $6. ;
-1049              format OLD_VAR $7. ;
-1050              format NEW_VAR $7. ;
-1051           input
-1052                       DATASET  $
-1053                       STUDY  $
-1054                       OLD_VAR  $
-1055                       NEW_VAR  $
-1056           ;
-1057           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-1058           run;
+1058        /**********************************************************************
+1059        *   PRODUCT:   SAS
+1060        *   VERSION:   V.04.00
+1061        *   CREATOR:   External File Interface
+1062        *   DATE:      03MAR23
+1063        *   DESC:      Generated SAS Datastep Code
+1064        *   TEMPLATE SOURCE:  (None Specified.)
+1065        ***********************************************************************/
+1066           data WORK.RENAM    ;
+1067           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+1068           infile '/mnt/code/CSV/ISS_Var_Rename.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
+1069              informat DATASET $4. ;
+1070              informat STUDY $6. ;
+1071              informat OLD_VAR $7. ;
+1072              informat NEW_VAR $7. ;
+1073              format DATASET $4. ;
+1074              format STUDY $6. ;
+1075              format OLD_VAR $7. ;
+1076              format NEW_VAR $7. ;
+1077           input
+1078                       DATASET  $
+1079                       STUDY  $
+1080                       OLD_VAR  $
+1081                       NEW_VAR  $
+1082           ;
+1083           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+1084           run;
 
 NOTE: The infile '/mnt/code/CSV/ISS_Var_Rename.csv' is:
       Filename=/mnt/code/CSV/ISS_Var_Rename.csv,
       Owner Name=domino,Group Name=domino,
       Access Permission=-rw-r--r--,
-      Last Modified=03Mar2023:13:12:41,
-      File Size (bytes)=228
+      Last Modified=03Mar2023:14:28:10,
+      File Size (bytes)=396
 
-NOTE: 7 records were read from the infile '/mnt/code/CSV/ISS_Var_Rename.csv'.
+NOTE: 13 records were read from the infile '/mnt/code/CSV/ISS_Var_Rename.csv'.
       The minimum record length was 25.
       The maximum record length was 27.
-NOTE: The data set WORK.RENAM has 7 observations and 4 variables.
+NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 
-7 rows created in WORK.RENAM from /mnt/code/CSV/ISS_Var_Rename.csv.
+13 rows created in WORK.RENAM from /mnt/code/CSV/ISS_Var_Rename.csv.
   
   
   
 NOTE: WORK.RENAM data set was successfully created.
-NOTE: The data set WORK.RENAM has 7 observations and 4 variables.
+36                                                         The SAS System                                15:45 Friday, March 3, 2023
+
+NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: PROCEDURE IMPORT used (Total process time):
       real time           0.02 seconds
-      cpu time            0.04 seconds
+      cpu time            0.03 seconds
       
 
-31                                                         The SAS System                                13:36 Friday, March 3, 2023
 
-
-NOTE: There were 7 observations read from the data set WORK.RENAM.
-NOTE: The data set WORK.RENAM_FORMAT has 7 observations and 4 variables.
+NOTE: There were 13 observations read from the data set WORK.RENAM.
+NOTE: The data set WORK.RENAM_FORMAT has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
@@ -1810,11 +2116,11 @@ NOTE: DATA statement used (Total process time):
 
 STUDY1_adsl_cont
 
-NOTE: There were 7 observations read from the data set WORK.RENAM_FORMAT.
-NOTE: The data set WORK.DS_IN has 7 observations and 4 variables.
+NOTE: There were 13 observations read from the data set WORK.RENAM_FORMAT.
+NOTE: The data set WORK.DS_IN has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -1835,8 +2141,8 @@ NOTE: DATA statement used (Total process time):
 NOTE: Table WORK.RENAME_IDENTIFY created, with 2 rows and 4 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.05 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -1844,7 +2150,7 @@ NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
 NOTE: The data set WORK.RENAME_IDENTIFY has 2 observations and 4 variables.
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -1852,14 +2158,14 @@ NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
 NOTE: The data set WORK.RENAME_IDENTIFY has 2 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
+37                                                         The SAS System                                15:45 Friday, March 3, 2023
+
       cpu time            0.00 seconds
       
 
 
 NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
       WHERE (memname='ADSL') and (study='STUDY1');
-32                                                         The SAS System                                13:36 Friday, March 3, 2023
-
 NOTE: The data set WORK.RENAME_NUM has 2 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
@@ -1882,7 +2188,7 @@ NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
 NOTE: The data set WORK.NEW_VAR_T has 1 observations and 2 variables.
 NOTE: PROCEDURE TRANSPOSE used (Total process time):
       real time           0.00 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -1891,7 +2197,7 @@ NOTE: There were 2 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.SORTEDBY has 2 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 NOTE: PROCEDURE SQL used (Total process time):
@@ -1910,19 +2216,19 @@ NOTE: PROCEDURE SQL used (Total process time):
 NOTE: There were 10 observations read from the data set COMP.ADSL.
 NOTE: The data set WORK.TEMP2 has 10 observations and 53 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
+      real time           0.00 seconds
       cpu time            0.00 seconds
+38                                                         The SAS System                                15:45 Friday, March 3, 2023
+
       
 
 
 NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
       WHERE (libname='COMP') and (memname='ADSL') and (name='AGEGR4');
 NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
-33                                                         The SAS System                                13:36 Friday, March 3, 2023
-
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -1931,7 +2237,7 @@ NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -1939,7 +2245,7 @@ NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
       WHERE (libname='COMP') and (memname='ADSL') and (name='AGEGR4N');
 NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
+      real time           0.01 seconds
       cpu time            0.00 seconds
       
 
@@ -1957,7 +2263,7 @@ NOTE: There were 10 observations read from the data set WORK.TEMP.
 NOTE: The data set WORK.TEMP_RENAM has 10 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -1972,13 +2278,13 @@ NOTE: PROCEDURE SORT used (Total process time):
 NOTE: There were 10 observations read from the data set WORK.TEMP2.
 NOTE: There were 10 observations read from the data set WORK.TEMP_RENAM.
 NOTE: The data set COMP.ADSL has 10 observations and 53 variables.
+39                                                         The SAS System                                15:45 Friday, March 3, 2023
+
 NOTE: DATA statement used (Total process time):
-      real time           0.05 seconds
-      cpu time            0.00 seconds
+      real time           0.06 seconds
+      cpu time            0.01 seconds
       
 
-
-34                                                         The SAS System                                13:36 Friday, March 3, 2023
 
 NOTE: There were 10 observations read from the data set STUDY2.ADSL.
 NOTE: The data set WORK.ADSL_STUDY2 has 10 observations and 55 variables.
@@ -1994,7 +2300,7 @@ NOTE: Libref COMP was successfully assigned as follows:
 NOTE: There were 10 observations read from the data set STUDY2.ADSL.
 NOTE: The data set WORK.ADSL_PRE has 10 observations and 47 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
+      real time           0.00 seconds
       cpu time            0.00 seconds
       
 
@@ -2009,66 +2315,66 @@ NOTE: DATA statement used (Total process time):
 
 NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to 
 WORK.PARMS.PARMS.SLIST.
-1059        /**********************************************************************
-1060        *   PRODUCT:   SAS
-1061        *   VERSION:   V.04.00
-1062        *   CREATOR:   External File Interface
-1063        *   DATE:      03MAR23
-1064        *   DESC:      Generated SAS Datastep Code
-1065        *   TEMPLATE SOURCE:  (None Specified.)
-1066        ***********************************************************************/
-1067           data WORK.RENAM    ;
-1068           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-1069           infile '/mnt/code/CSV/ISS_Var_Rename.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
-1070              informat DATASET $4. ;
-1071              informat STUDY $6. ;
-1072              informat OLD_VAR $7. ;
-1073              informat NEW_VAR $7. ;
-1074              format DATASET $4. ;
-1075              format STUDY $6. ;
-1076              format OLD_VAR $7. ;
-1077              format NEW_VAR $7. ;
-1078           input
-1079                       DATASET  $
-1080                       STUDY  $
-1081                       OLD_VAR  $
-1082                       NEW_VAR  $
-1083           ;
-1084           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-1085           run;
+1085        /**********************************************************************
+1086        *   PRODUCT:   SAS
+1087        *   VERSION:   V.04.00
+1088        *   CREATOR:   External File Interface
+1089        *   DATE:      03MAR23
+1090        *   DESC:      Generated SAS Datastep Code
+1091        *   TEMPLATE SOURCE:  (None Specified.)
+1092        ***********************************************************************/
+1093           data WORK.RENAM    ;
+1094           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+1095           infile '/mnt/code/CSV/ISS_Var_Rename.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
+1096              informat DATASET $4. ;
+1097              informat STUDY $6. ;
+1098              informat OLD_VAR $7. ;
+1099              informat NEW_VAR $7. ;
+1100              format DATASET $4. ;
+1101              format STUDY $6. ;
+1102              format OLD_VAR $7. ;
+1103              format NEW_VAR $7. ;
+1104           input
+1105                       DATASET  $
+1106                       STUDY  $
+1107                       OLD_VAR  $
+40                                                         The SAS System                                15:45 Friday, March 3, 2023
+
+1108                       NEW_VAR  $
+1109           ;
+1110           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+1111           run;
 
 NOTE: The infile '/mnt/code/CSV/ISS_Var_Rename.csv' is:
-35                                                         The SAS System                                13:36 Friday, March 3, 2023
-
       Filename=/mnt/code/CSV/ISS_Var_Rename.csv,
       Owner Name=domino,Group Name=domino,
       Access Permission=-rw-r--r--,
-      Last Modified=03Mar2023:13:12:41,
-      File Size (bytes)=228
+      Last Modified=03Mar2023:14:28:10,
+      File Size (bytes)=396
 
-NOTE: 7 records were read from the infile '/mnt/code/CSV/ISS_Var_Rename.csv'.
+NOTE: 13 records were read from the infile '/mnt/code/CSV/ISS_Var_Rename.csv'.
       The minimum record length was 25.
       The maximum record length was 27.
-NOTE: The data set WORK.RENAM has 7 observations and 4 variables.
+NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
-7 rows created in WORK.RENAM from /mnt/code/CSV/ISS_Var_Rename.csv.
+13 rows created in WORK.RENAM from /mnt/code/CSV/ISS_Var_Rename.csv.
   
   
   
 NOTE: WORK.RENAM data set was successfully created.
-NOTE: The data set WORK.RENAM has 7 observations and 4 variables.
+NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.03 seconds
+      real time           0.02 seconds
+      cpu time            0.04 seconds
       
 
 
-NOTE: There were 7 observations read from the data set WORK.RENAM.
-NOTE: The data set WORK.RENAM_FORMAT has 7 observations and 4 variables.
+NOTE: There were 13 observations read from the data set WORK.RENAM.
+NOTE: The data set WORK.RENAM_FORMAT has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
@@ -2076,8 +2382,8 @@ NOTE: DATA statement used (Total process time):
 
 STUDY2_adsl_cont
 
-NOTE: There were 7 observations read from the data set WORK.RENAM_FORMAT.
-NOTE: The data set WORK.DS_IN has 7 observations and 4 variables.
+NOTE: There were 13 observations read from the data set WORK.RENAM_FORMAT.
+NOTE: The data set WORK.DS_IN has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
@@ -2092,13 +2398,13 @@ NOTE: PROCEDURE CONTENTS used (Total process time):
 
 
 NOTE: There were 55 observations read from the data set WORK.DS_IN.
+41                                                         The SAS System                                15:45 Friday, March 3, 2023
+
 NOTE: The data set WORK.CONT_ALL has 55 observations and 42 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
-
-36                                                         The SAS System                                13:36 Friday, March 3, 2023
 
 NOTE: Table WORK.RENAME_IDENTIFY created, with 2 rows and 4 columns.
 
@@ -2139,7 +2445,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -2152,14 +2458,14 @@ NOTE: PROCEDURE TRANSPOSE used (Total process time):
       
 
 
+42                                                         The SAS System                                15:45 Friday, March 3, 2023
+
 NOTE: There were 2 observations read from the data set SASHELP.VCOLUMN.
       WHERE (libname='ADAMDATA') and (memname='ADSL') and (sortedby not = 0);
 NOTE: The data set WORK.SORTEDBY has 2 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
-37                                                         The SAS System                                13:36 Friday, March 3, 2023
-
+      real time           0.01 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: PROCEDURE SQL used (Total process time):
@@ -2171,7 +2477,7 @@ NOTE: Table WORK.TEMP created, with 10 rows and 4 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -2212,13 +2518,13 @@ NOTE: DATA statement used (Total process time):
 
 NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
       WHERE (libname='ADAMDATA') and (memname='ADSL') and (name='AGEGR1N');
+43                                                         The SAS System                                15:45 Friday, March 3, 2023
+
 NOTE: The data set WORK.VAR_PROPS2 has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.02 seconds
+      real time           0.01 seconds
       cpu time            0.00 seconds
       
-
-38                                                         The SAS System                                13:36 Friday, March 3, 2023
 
 
 NOTE: There were 10 observations read from the data set WORK.TEMP.
@@ -2241,7 +2547,7 @@ NOTE: There were 10 observations read from the data set WORK.TEMP2.
 NOTE: There were 10 observations read from the data set WORK.TEMP_RENAM.
 NOTE: The data set COMP.ADSL has 10 observations and 53 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
+      real time           0.05 seconds
       cpu time            0.00 seconds
       
 
@@ -2250,7 +2556,7 @@ NOTE: There were 10 observations read from the data set STUDY3.ADSL.
 NOTE: The data set WORK.ADSL_STUDY3 has 10 observations and 46 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Libref COMP was successfully assigned as follows: 
@@ -2261,7 +2567,7 @@ NOTE: There were 10 observations read from the data set STUDY3.ADSL.
 NOTE: The data set WORK.ADSL_PRE has 10 observations and 38 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -2272,80 +2578,80 @@ NOTE: DATA statement used (Total process time):
       cpu time            0.00 seconds
       
 
+44                                                         The SAS System                                15:45 Friday, March 3, 2023
+
 
 NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to 
 WORK.PARMS.PARMS.SLIST.
-1086        /**********************************************************************
-1087        *   PRODUCT:   SAS
-1088        *   VERSION:   V.04.00
-39                                                         The SAS System                                13:36 Friday, March 3, 2023
-
-1089        *   CREATOR:   External File Interface
-1090        *   DATE:      03MAR23
-1091        *   DESC:      Generated SAS Datastep Code
-1092        *   TEMPLATE SOURCE:  (None Specified.)
-1093        ***********************************************************************/
-1094           data WORK.RENAM    ;
-1095           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-1096           infile '/mnt/code/CSV/ISS_Var_Rename.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
-1097              informat DATASET $4. ;
-1098              informat STUDY $6. ;
-1099              informat OLD_VAR $7. ;
-1100              informat NEW_VAR $7. ;
-1101              format DATASET $4. ;
-1102              format STUDY $6. ;
-1103              format OLD_VAR $7. ;
-1104              format NEW_VAR $7. ;
-1105           input
-1106                       DATASET  $
-1107                       STUDY  $
-1108                       OLD_VAR  $
-1109                       NEW_VAR  $
-1110           ;
-1111           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-1112           run;
+1112        /**********************************************************************
+1113        *   PRODUCT:   SAS
+1114        *   VERSION:   V.04.00
+1115        *   CREATOR:   External File Interface
+1116        *   DATE:      03MAR23
+1117        *   DESC:      Generated SAS Datastep Code
+1118        *   TEMPLATE SOURCE:  (None Specified.)
+1119        ***********************************************************************/
+1120           data WORK.RENAM    ;
+1121           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+1122           infile '/mnt/code/CSV/ISS_Var_Rename.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
+1123              informat DATASET $4. ;
+1124              informat STUDY $6. ;
+1125              informat OLD_VAR $7. ;
+1126              informat NEW_VAR $7. ;
+1127              format DATASET $4. ;
+1128              format STUDY $6. ;
+1129              format OLD_VAR $7. ;
+1130              format NEW_VAR $7. ;
+1131           input
+1132                       DATASET  $
+1133                       STUDY  $
+1134                       OLD_VAR  $
+1135                       NEW_VAR  $
+1136           ;
+1137           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+1138           run;
 
 NOTE: The infile '/mnt/code/CSV/ISS_Var_Rename.csv' is:
       Filename=/mnt/code/CSV/ISS_Var_Rename.csv,
       Owner Name=domino,Group Name=domino,
       Access Permission=-rw-r--r--,
-      Last Modified=03Mar2023:13:12:41,
-      File Size (bytes)=228
+      Last Modified=03Mar2023:14:28:10,
+      File Size (bytes)=396
 
-NOTE: 7 records were read from the infile '/mnt/code/CSV/ISS_Var_Rename.csv'.
+NOTE: 13 records were read from the infile '/mnt/code/CSV/ISS_Var_Rename.csv'.
       The minimum record length was 25.
       The maximum record length was 27.
-NOTE: The data set WORK.RENAM has 7 observations and 4 variables.
+NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 
-7 rows created in WORK.RENAM from /mnt/code/CSV/ISS_Var_Rename.csv.
+13 rows created in WORK.RENAM from /mnt/code/CSV/ISS_Var_Rename.csv.
   
   
   
 NOTE: WORK.RENAM data set was successfully created.
-NOTE: The data set WORK.RENAM has 7 observations and 4 variables.
+NOTE: The data set WORK.RENAM has 13 observations and 4 variables.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.04 seconds
+      real time           0.02 seconds
       cpu time            0.02 seconds
       
 
+45                                                         The SAS System                                15:45 Friday, March 3, 2023
 
-NOTE: There were 7 observations read from the data set WORK.RENAM.
-NOTE: The data set WORK.RENAM_FORMAT has 7 observations and 4 variables.
+
+NOTE: There were 13 observations read from the data set WORK.RENAM.
+NOTE: The data set WORK.RENAM_FORMAT has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
-40                                                         The SAS System                                13:36 Friday, March 3, 2023
-
+      cpu time            0.01 seconds
       
 
 STUDY3_adsl_cont
 
-NOTE: There were 7 observations read from the data set WORK.RENAM_FORMAT.
-NOTE: The data set WORK.DS_IN has 7 observations and 4 variables.
+NOTE: There were 13 observations read from the data set WORK.RENAM_FORMAT.
+NOTE: The data set WORK.DS_IN has 13 observations and 4 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
@@ -2386,19 +2692,19 @@ NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
 NOTE: The data set WORK.RENAME_IDENTIFY has 2 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: There were 2 observations read from the data set WORK.RENAME_IDENTIFY.
       WHERE (memname='ADSL') and (study='STUDY3');
+46                                                         The SAS System                                15:45 Friday, March 3, 2023
+
 NOTE: The data set WORK.RENAME_NUM has 2 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
-
-41                                                         The SAS System                                13:36 Friday, March 3, 2023
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
@@ -2425,7 +2731,7 @@ NOTE: There were 2 observations read from the data set SASHELP.VCOLUMN.
 NOTE: The data set WORK.SORTEDBY has 2 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 NOTE: PROCEDURE SQL used (Total process time):
@@ -2437,7 +2743,7 @@ NOTE: Table WORK.TEMP created, with 10 rows and 4 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -2452,13 +2758,13 @@ NOTE: PROCEDURE SORT used (Total process time):
 NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
       WHERE (libname='COMP') and (memname='ADSL') and (name='AGEGR1');
 NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
+47                                                         The SAS System                                15:45 Friday, March 3, 2023
+
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
       cpu time            0.00 seconds
       
 
-
-42                                                         The SAS System                                13:36 Friday, March 3, 2023
 
 NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
       WHERE (libname='ADAMDATA') and (memname='ADSL') and (name='AGEGR2');
@@ -2473,7 +2779,7 @@ NOTE: There were 1 observations read from the data set SASHELP.VCOLUMN.
       WHERE (libname='COMP') and (memname='ADSL') and (name='AGEGR1N');
 NOTE: The data set WORK.VAR_PROPS has 1 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
+      real time           0.01 seconds
       cpu time            0.00 seconds
       
 
@@ -2507,7 +2813,7 @@ NOTE: There were 10 observations read from the data set WORK.TEMP2.
 NOTE: There were 10 observations read from the data set WORK.TEMP_RENAM.
 NOTE: The data set COMP.ADSL has 10 observations and 44 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.05 seconds
+      real time           0.06 seconds
       cpu time            0.00 seconds
       
 
@@ -2519,49 +2825,144 @@ NOTE: Libref COMPC was successfully assigned as follows:
 NOTE: Libref COMP was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY1
+
+NOTE: There were 12 observations read from the data set COMP.ADAE.
+NOTE: The data set WORK.SORT_DS_STUDY1 has 12 observations and 107 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 12 observations read from the data set WORK.SORT_DS_STUDY1.
+NOTE: The data set COMP.ADAE has 12 observations and 107 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.00 seconds
+      
+
 NOTE: Libref COMPC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY1C
 NOTE: Libref COMP was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY1
+
+NOTE: There were 12 observations read from the data set COMP.ADAE.
+NOTE: The data set WORK.SORT_DS_STUDY1 has 12 observations and 107 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 12 observations read from the data set WORK.SORT_DS_STUDY1.
+NOTE: The data set COMP.ADAE has 12 observations and 107 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.00 seconds
+      
+
 NOTE: Libref COMPC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY1C
 NOTE: Libref COMP was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY1
+
+NOTE: There were 12 observations read from the data set COMP.ADAE.
+NOTE: The data set WORK.SORT_DS_STUDY1 has 12 observations and 107 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 12 observations read from the data set WORK.SORT_DS_STUDY1.
+NOTE: The data set COMP.ADAE has 12 observations and 107 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.01 seconds
+      
+
 NOTE: Data file COMPC.ADAE.DATA is in a format that is native to another host, or the file encoding does not match the session 
       encoding. Cross Environment Data Access will be used, which might require additional CPU resources and might reduce 
       performance.
 
 NOTE: There were 12 observations read from the data set COMP.ADAE.
 NOTE: There were 12 observations read from the data set COMPC.ADAE.
-NOTE: At least one W.D format was too small for the number to be printed. The decimal may be shifted by the "BEST" format.
 NOTE: PROCEDURE COMPARE used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.06 seconds
+      real time           0.04 seconds
+      cpu time            0.02 seconds
       
 
-INFO: PROC COMPARE result for all datasets is [7216]
+INFO: PROC COMPARE result for all datasets is [7184]
 NOTE: Libref COMPC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY2C
 NOTE: Libref COMP was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY2
+
+NOTE: There were 1 observations read from the data set COMP.ADAE.
+NOTE: The data set WORK.SORT_DS_STUDY2 has 1 observations and 107 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set WORK.SORT_DS_STUDY2.
+NOTE: The data set COMP.ADAE has 1 observations and 107 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.01 seconds
+      
+
 NOTE: Libref COMPC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY2C
 NOTE: Libref COMP was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY2
+
+NOTE: There were 1 observations read from the data set COMP.ADAE.
+NOTE: The data set WORK.SORT_DS_STUDY2 has 1 observations and 107 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set WORK.SORT_DS_STUDY2.
+NOTE: The data set COMP.ADAE has 1 observations and 107 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.00 seconds
+      
+
 NOTE: Libref COMPC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY2C
 NOTE: Libref COMP was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY2
+
+NOTE: There were 1 observations read from the data set COMP.ADAE.
+NOTE: The data set WORK.SORT_DS_STUDY2 has 1 observations and 107 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set WORK.SORT_DS_STUDY2.
+NOTE: The data set COMP.ADAE has 1 observations and 107 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.00 seconds
+      
+
 NOTE: Data file COMPC.ADAE.DATA is in a format that is native to another host, or the file encoding does not match the session 
       encoding. Cross Environment Data Access will be used, which might require additional CPU resources and might reduce 
       performance.
@@ -2569,68 +2970,91 @@ NOTE: Data file COMPC.ADAE.DATA is in a format that is native to another host, o
 NOTE: There were 1 observations read from the data set COMP.ADAE.
 NOTE: There were 1 observations read from the data set COMPC.ADAE.
 NOTE: PROCEDURE COMPARE used (Total process time):
-      real time           0.05 seconds
+      real time           0.03 seconds
       cpu time            0.02 seconds
       
 
-INFO: PROC COMPARE result for all datasets is [7216]
+INFO: PROC COMPARE result for all datasets is [7184]
 NOTE: Libref COMPC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3C
 NOTE: Libref COMP was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3
+
+NOTE: There were 9 observations read from the data set COMP.ADAE.
+NOTE: The data set WORK.SORT_DS_STUDY3 has 9 observations and 98 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 9 observations read from the data set WORK.SORT_DS_STUDY3.
+NOTE: The data set COMP.ADAE has 9 observations and 98 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.00 seconds
+      
+
 NOTE: Libref COMPC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3C
 NOTE: Libref COMP was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3
+
+NOTE: There were 9 observations read from the data set COMP.ADAE.
+NOTE: The data set WORK.SORT_DS_STUDY3 has 9 observations and 98 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 9 observations read from the data set WORK.SORT_DS_STUDY3.
+NOTE: The data set COMP.ADAE has 9 observations and 98 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.00 seconds
+      
+
 NOTE: Libref COMPC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3C
 NOTE: Libref COMP was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: /mnt/data/US_PhUSE_ISS_Tool/test/adamdata/STUDY3
+
+NOTE: There were 9 observations read from the data set COMP.ADAE.
+NOTE: The data set WORK.SORT_DS_STUDY3 has 9 observations and 98 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 9 observations read from the data set WORK.SORT_DS_STUDY3.
+NOTE: The data set COMP.ADAE has 9 observations and 98 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.00 seconds
+      
+
 NOTE: Data file COMPC.ADAE.DATA is in a format that is native to another host, or the file encoding does not match the session 
       encoding. Cross Environment Data Access will be used, which might require additional CPU resources and might reduce 
       performance.
 
-NOTE: There were 3 observations read from the data set COMP.ADAE.
+NOTE: There were 9 observations read from the data set COMP.ADAE.
 NOTE: There were 9 observations read from the data set COMPC.ADAE.
-NOTE: At least one W.D format was too small for the number to be printed. The decimal may be shifted by the "BEST" format.
 NOTE: PROCEDURE COMPARE used (Total process time):
-      real time           0.10 seconds
-      cpu time            0.05 seconds
-      
-
-INFO: PROC COMPARE result for all datasets is [7344]
-NOTE: ODS PDF printed 43 pages to /mnt/code/Compares/adae_Data_Compare.pdf.
-NOTE: Writing ODS PDF output to DISK destination "/mnt/code/Compares/adsl_Data_Compare.pdf", printer "PDF".
-NOTE: Data file COMPC.ADSL.DATA is in a format that is native to another host, or the file encoding does not match the session 
-      encoding. Cross Environment Data Access will be used, which might require additional CPU resources and might reduce 
-      performance.
-
-NOTE: There were 10 observations read from the data set COMP.ADSL.
-NOTE: There were 10 observations read from the data set COMPC.ADSL.
-NOTE: PROCEDURE COMPARE used (Total process time):
-      real time           0.08 seconds
-      cpu time            0.03 seconds
-      
-
-INFO: PROC COMPARE result for all datasets is [7216]
-NOTE: Data file COMPC.ADSL.DATA is in a format that is native to another host, or the file encoding does not match the session 
-      encoding. Cross Environment Data Access will be used, which might require additional CPU resources and might reduce 
-      performance.
-
-NOTE: There were 10 observations read from the data set COMP.ADSL.
-NOTE: There were 10 observations read from the data set COMPC.ADSL.
-NOTE: PROCEDURE COMPARE used (Total process time):
-      real time           0.07 seconds
+      real time           0.04 seconds
       cpu time            0.02 seconds
       
 
 INFO: PROC COMPARE result for all datasets is [7216]
+NOTE: ODS PDF printed 11 pages to /mnt/code/Compares/adae_Data_Compare.pdf.
+NOTE: Writing ODS PDF output to DISK destination "/mnt/code/Compares/adsl_Data_Compare.pdf", printer "PDF".
 NOTE: Data file COMPC.ADSL.DATA is in a format that is native to another host, or the file encoding does not match the session 
       encoding. Cross Environment Data Access will be used, which might require additional CPU resources and might reduce 
       performance.
@@ -2643,15 +3067,77 @@ NOTE: PROCEDURE COMPARE used (Total process time):
       
 
 INFO: PROC COMPARE result for all datasets is [7216]
-NOTE: ODS PDF printed 24 pages to /mnt/code/Compares/adsl_Data_Compare.pdf.
-1113       
-43                                                         The SAS System                                13:36 Friday, March 3, 2023
+NOTE: Data file COMPC.ADSL.DATA is in a format that is native to another host, or the file encoding does not match the session 
+      encoding. Cross Environment Data Access will be used, which might require additional CPU resources and might reduce 
+      performance.
 
-1114       
-1115       
+NOTE: There were 10 observations read from the data set COMP.ADSL.
+NOTE: There were 10 observations read from the data set COMPC.ADSL.
+NOTE: PROCEDURE COMPARE used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+INFO: PROC COMPARE result for all datasets is [7216]
+NOTE: Data file COMPC.ADSL.DATA is in a format that is native to another host, or the file encoding does not match the session 
+      encoding. Cross Environment Data Access will be used, which might require additional CPU resources and might reduce 
+      performance.
+
+NOTE: There were 10 observations read from the data set COMP.ADSL.
+NOTE: There were 10 observations read from the data set COMPC.ADSL.
+NOTE: PROCEDURE COMPARE used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+INFO: PROC COMPARE result for all datasets is [7216]
+NOTE: ODS PDF printed 12 pages to /mnt/code/Compares/adsl_Data_Compare.pdf.
+NOTE: The data set WORK.COPY has 1 observations and 0 variables.
+48                                                         The SAS System                                15:45 Friday, March 3, 2023
+
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The data set WORK.DRIVERS has 1 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set WORK.DRIVERS.
+NOTE: The data set WORK.DRIVERS has 1 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The data set WORK.TEST has 1 observations and 0 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.25 seconds
+      cpu time            0.02 seconds
+      
+
+1139       
+1140       
+1141       
 
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           3.37 seconds
-      cpu time            0.86 seconds
+      real time           3.99 seconds
+      cpu time            0.89 seconds
       
